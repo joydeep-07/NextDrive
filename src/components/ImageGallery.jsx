@@ -2,17 +2,21 @@ import React from "react";
 
 const ImageGallery = () => {
   return (
-    <div>
-      <h1 className="text-3xl font-semibold text-center mx-auto">
-        Our Latest Creations
-      </h1>
+    <div className="max-w-6xl mx-auto px-4">
+      {/* Heading */}
+      <div className="flex flex-col items-start gap-2">
+        <h1 className="text-4xl font-semibold text-[var(--text-main)]">
+          Our Latest <span className="text-[var(--accent-primary)]"> Creations</span>
+        </h1>
 
-      <p className="text-sm text-slate-500 text-center mt-2 max-w-lg mx-auto">
-        A visual collection of our most recent works - each piece crafted with
-        intention, emotion, and style.
-      </p>
+        <p className="text-sm text-[var(--text-secondary)] max-w-lg">
+          A visual collection of our most recent works each piece crafted with
+          intention, emotion, and style.
+        </p>
+      </div>
 
-      <div className="flex items-center gap-2 h-[400px] w-full max-w-6xl mt-10 mx-auto">
+      {/* Gallery */}
+      <div className="flex items-center gap-2 h-[400px] w-full mt-10">
         {[
           "1719368472026-dc26f70a9b76",
           "1649265825072-f7dd6942baed",
@@ -23,12 +27,18 @@ const ImageGallery = () => {
         ].map((id, index) => (
           <div
             key={index}
-            className="relative group flex-grow transition-all w-56 rounded-lg overflow-hidden h-[400px] duration-500 hover:w-full"
+            className="
+              relative group flex-grow
+              transition-all duration-500
+              w-56 hover:w-full
+              h-[400px]
+              rounded-lg overflow-hidden
+            "
           >
             <img
-              className="h-full w-full object-cover object-center"
               src={`https://images.unsplash.com/photo-${id}?q=80&h=800&w=800&auto=format&fit=crop`}
               alt="gallery"
+              className="h-full w-full object-cover"
             />
           </div>
         ))}

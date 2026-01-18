@@ -15,7 +15,7 @@
    --border-light: #e0e0e0;
 
   /* Accent (Your specified green palette) */
-  --accent-primary: rgb(26, 124, 26);  
+  --accent-primary: rgb(45, 146, 45);  
   --accent-hover: rgb(20, 100, 20);   
   --accent-soft: rgba(26, 124, 26, 0.1); 
 
@@ -51,7 +51,7 @@
   --border-light: #1f1f1f;
 
   /* Accent (Adjusted for dark mode) */
-  --accent-primary: #338b30;          
+  --accent-primary: #41b13d;          
   --accent-hover: rgb(49, 110, 49);  
   --accent-soft: rgba(102, 187, 106, 0.15);
 
