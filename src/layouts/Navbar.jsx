@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ThemeToggle from "../components/ThemeToggle";
 import { MdMenu } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -16,22 +17,20 @@ const Navbar = () => {
         }}
       >
         {/* Logo */}
-        <a href="/" className="text-lg font-semibold">
+        <Link to="/" className="text-lg font-semibold">
           NEXT
           <span style={{ color: "var(--accent-primary)" }}>CLOUD</span>
-        </a>
+        </Link>
 
         {/* Desktop Right Section */}
         <div className="hidden md:flex items-center gap-6">
-          <a href="/" className="hover:text-[var(--accent-primary)] transition">
-            Home
-          </a>
+         
 
           <ThemeToggle />
 
-          <button className="primary_button">Sign Up</button>
+          <Link to="/login" className="primary_button">Sign Up</Link>
 
-          <button className="secondary_button">Sign In</button>
+         
         </div>
 
         {/* Mobile Menu Button */}

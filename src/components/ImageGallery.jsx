@@ -5,12 +5,12 @@ const ImageGallery = () => {
     <div className="max-w-6xl mx-auto px-4">
       {/* Heading */}
       <div className="flex flex-col items-start gap-2">
-        <h1 className="text-4xl font-semibold text-[var(--text-main)]">
+        <h1 className="text-6xl font-heading font-medium text-[var(--text-main)]">
           Our Latest <span className="text-[var(--accent-primary)]"> Creations</span>
         </h1>
 
         <p className="text-sm text-[var(--text-secondary)] max-w-lg">
-          A visual collection of our most recent works each piece crafted with
+          A visual collection of our most recent works each piece crafted with <br />
           intention, emotion, and style.
         </p>
       </div>

@@ -1,8 +1,11 @@
+import { MdMail } from "react-icons/md";
+import { Link } from "react-router-dom";
+
 export default function Footer() {
   return (
     <footer
       className="
-        relative overflow-hidden px-6 md:px-16 lg:px-24 xl:px-32 w-full pt-10 text-sm
+        relative overflow-hidden px-6 md:px-16 lg:px-24 xl:px-32 w-full pt-12 pb-8
         bg-[var(--bg-main)] text-[var(--text-muted)]
       "
     >
@@ -27,67 +30,76 @@ export default function Footer() {
       </svg>
 
       {/* Main Content */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-14 relative z-10">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-12 relative z-10">
         {/* Brand / Logo */}
-        <div className="sm:col-span-2 lg:col-span-1 text-[var(--text-main)]">
-          <h2 className="text-xl font-semibold">PrebuiltUI</h2>
-          <p className="text-sm/7 mt-6 text-[var(--text-secondary)]">
-            PrebuiltUI is a free and open-source UI component library with over
-            340+ beautifully crafted, customizable components built with
-            Tailwind CSS.
+        <div className="md:col-span-2 lg:col-span-4 text-[var(--text-main)]">
+          <Link to="/" className="text-2xl font-bold tracking-tight">
+            NEXT
+            <span className="text-[var(--accent-primary)]">CLOUD</span>
+          </Link>
+          <p className="text-sm text-justify mt-4 text-[var(--text-secondary)]/70 max-w-sm">
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Voluptatum eos nisi explicabo, eligendi illo minima assumenda omnis sapiente at quo.
           </p>
         </div>
 
-        {/* Company Links */}
-        <div className="flex flex-col lg:items-center lg:justify-center">
-          <div className="flex flex-col space-y-2.5">
-            <h2 className="font-semibold mb-5 text-[var(--text-main)]">
+        {/* Links Section */}
+        <div className="md:col-span-2 lg:col-span-4 flex flex-col sm:flex-row gap-8 lg:gap-12 justify-between">
+          {/* Company Links */}
+          <div className="flex-1">
+            <h3 className="font-semibold mb-4 uppercase text-[var(--text-main)] text-sm">
               Company
-            </h2>
-            {["About us", "Careers", "Contact us", "Privacy policy"].map(
-              (item) => (
+            </h3>
+            <div className="flex flex-col space-y-3">
+              {["About us", "Careers", "Contact us"].map((item) => (
                 <a
                   key={item}
                   href="#"
-                  className="transition hover:text-[var(--accent-primary)]"
+                  className="transition-all text-sm duration-200 hover:text-[var(--accent-primary)] hover:translate-x-1 hover:font-medium"
                 >
                   {item}
                 </a>
-              ),
-            )}
+              ))}
+            </div>
+          </div>
+
+          {/* Social Links */}
+          <div className="flex-1">
+            <h3 className="font-semibold uppercase mb-4 text-[var(--text-main)] text-sm">
+              Social
+            </h3>
+            <div className="flex flex-col space-y-3">
+              {["Instagram", "Facebook", "Github", "Linkedin"].map((item) => (
+                <a
+                  key={item}
+                  href="#"
+                  className="transition-all text-sm duration-200 hover:text-[var(--accent-primary)] hover:translate-x-1 hover:font-medium"
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Newsletter */}
-        <div>
-          <h2 className="font-semibold text-[var(--text-main)] mb-5">
+        <div className="md:col-span-2 lg:col-span-4">
+          <h3 className="font-semibold text-[var(--text-main)] mb-1 text-sm uppercase">
             Subscribe to our newsletter
-          </h2>
-
-          <div className="space-y-6 max-w-sm">
-            <p className="text-[var(--text-muted)]">
-              The latest news, articles, and resources, sent to your inbox
-              weekly.
-            </p>
-
-            <div className="flex items-center">
+          </h3>
+          <p className="text-xs mb-6 text-[var(--text-muted)]">
+            The latest news, articles, and resources, sent to your inbox weekly.
+          </p>
+          <div className="space-y-4">
+            <div className="flex items-center border pl-4 pr-1 gap-3 bg-[var(--bg-secondary)]/50 border-[var(--border-light)] h-12 rounded-full overflow-hidden transition-all duration-300 hover:border-[var(--accent-primary)]/50 focus-within:border-[var(--accent-primary)] focus-within:shadow-[0_0_0_3px_var(--accent-primary)/10]">
+              <MdMail className="w-5 h-5 text-[var(--text-muted)]" />
               <input
                 type="email"
                 placeholder="Enter your email"
-                className="
-                  h-11 w-full max-w-64 px-3 rounded-l-md outline-none
-                  bg-[var(--bg-tertiary)]
-                  border border-[var(--border-light)]
-                  text-[var(--text-main)]
-                "
+                className="flex-1 h-full outline-none bg-transparent text-sm text-[var(--text-secondary)] placeholder:text-[var(--text-muted)]"
               />
               <button
-                className="
-                  h-11 px-4 rounded-r-md font-semibold text-white
-                  bg-[var(--accent-primary)]
-                  hover:bg-[var(--accent-hover)]
-                  transition
-                "
+                type="submit"
+                className="bg-[var(--accent-primary)] hover:bg-[var(--accent-primary)]/80 font-medium px-5 h-10 rounded-full text-sm text-white transition-all duration-200 hover:scale-105 active:scale-95"
               >
                 Subscribe
               </button>
@@ -100,25 +112,28 @@ export default function Footer() {
       <div
         className="
           flex flex-col md:flex-row items-center justify-between gap-4
-          py-4 mt-6 border-t border-[var(--border-light)]
-          text-[var(--text-muted)]
+          pt-6 mt-8 border-t border-[var(--border-light)]
+          text-[var(--text-muted)] text-sm
         "
       >
         <p className="text-center">
-          © 2025 <span className="text-[var(--text-main)]">PrebuiltUI</span>.
-          All rights reserved.
+          © 2025{" "}
+          <span className="text-[var(--text-main)] font-medium">
+           NextCloud
+          </span>
+          . All rights reserved.
         </p>
 
-        <div className="flex items-center gap-4">
-          <a className="hover:text-[var(--accent-primary)]" href="/">
-            Privacy Policy
-          </a>
-          <a className="hover:text-[var(--accent-primary)]" href="/">
-            Terms
-          </a>
-          <a className="hover:text-[var(--accent-primary)]" href="/">
-            Cookies
-          </a>
+        <div className="flex items-center gap-6">
+          {["Privacy Policy", "Terms", "Cookies"].map((item) => (
+            <a
+              key={item}
+              className="hover:text-[var(--accent-primary)] transition-colors duration-200"
+              href="/"
+            >
+              {item}
+            </a>
+          ))}
         </div>
       </div>
     </footer>
