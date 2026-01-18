@@ -32,7 +32,7 @@ const ImageGallery = () => {
               transition-all duration-500
               w-56 hover:w-full
               h-[400px]
-              rounded-lg overflow-hidden
+              rounded-lg 
             "
           >
             <img
