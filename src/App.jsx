@@ -1,6 +1,8 @@
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import Root from "./layouts/Root";
+import Hero from "./components/Hero";
+import Footer from "./layouts/Footer";
 
 function App() {
   const theme = useSelector((state) => state.theme.mode);
@@ -16,6 +18,8 @@ function App() {
   return (
     <>
       <Root />
+      <Hero/>
+      <Footer/>
     </>
   );
 }
