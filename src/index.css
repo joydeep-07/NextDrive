@@ -89,3 +89,20 @@ body {
   background-color:  var(--accent-hover); 
   color: white;
 }
+
+
+.secondary_button {
+  background-color: var(--bg-tertiary); 
+  color: white; 
+  font-weight: 600;
+  padding: 5px 30px;
+  border-radius: 3px; 
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 15px;
+}
+
+.secondary_button:hover {
+  background-color:  var(--bg-secondary); 
+  color: white;
+}

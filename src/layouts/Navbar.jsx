@@ -29,9 +29,9 @@ const Navbar = () => {
 
           <ThemeToggle />
 
-         <button className="primary_button">
-            Sign Up
-         </button>
+          <button className="primary_button">Sign Up</button>
+
+          <button className="secondary_button">Sign In</button>
         </div>
 
         {/* Mobile Menu Button */}
@@ -40,7 +40,7 @@ const Navbar = () => {
           onClick={() => setOpen(!open)}
           className="md:hidden active:scale-90 transition"
         >
-          <MdMenu/>
+          <MdMenu />
         </button>
 
         {/* Mobile Menu */}
