@@ -13,12 +13,12 @@ export default function Login() {
     <div className="flex items-center justify-center bg-[var(--bg-main)]">
       <div className="flex items-center justify-center h-[700px] w-full max-w-6xl px-4">
         {/* Left Image */}
-        <div className="w-full hidden md:flex justify-center items-center">
-          <img
+        <div className="w-full h-[70vh] hidden md:flex border justify-center items-center">
+          {/* <img
             className="h-[70vh]"
-            src="https://raw.githubusercontent.com/prebuiltui/prebuiltui/main/assets/login/leftSideImage.png"
+            src={statue}
             alt="leftSideImage"
-          />
+          /> */}
         </div>
 
         {/* Form */}
