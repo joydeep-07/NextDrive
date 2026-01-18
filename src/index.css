@@ -16,9 +16,9 @@
   --border-medium: #d1d1d1;
 
   /* Accent (Red) */
-  --accent-primary: #dc2626;   /* red-600 */
-  --accent-hover: #b91c1c;     /* red-700 */
-  --accent-soft: #fee2e2;      /* red-100 */
+  --accent-primary: #dc2626;   
+  --accent-hover: #b91c1c;     
+  --accent-soft: #fee2e2;      
 
   /* Status Colors */
   --success: #16a34a;
