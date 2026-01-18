@@ -6,19 +6,17 @@ import { IoLockClosedOutline, IoMailOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 
 export default function Login() {
-
-      const [showPassword, setShowPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   return (
     <div className="flex items-center justify-center bg-[var(--bg-main)]">
       <div className="flex items-center justify-center h-[700px] w-full max-w-6xl px-4">
         {/* Left Image */}
-        <div className="w-full h-[70vh] hidden md:flex border justify-center items-center">
-          {/* <img
-            className="h-[70vh]"
-            src={statue}
-            alt="leftSideImage"
-          /> */}
+        <div className="w-full h-[70vh] border border-[var(--border-light)]/50 hidden md:flex justify-center items-center">
+          <h1 className="uppercase text-2xl text-[var(--text-secondary)]/50 font-medium tracking-wide ">
+            {" "}
+            Coming Soon
+          </h1>
         </div>
 
         {/* Form */}
