@@ -15,14 +15,14 @@
    --border-light: #e0e0e0;
 
   /* Accent (Your specified green palette) */
-  --accent-primary: rgb(26, 124, 26);  /* Deep rich green */
-  --accent-hover: rgb(20, 100, 20);    /* Slightly darker for hover */
-  --accent-soft: rgba(26, 124, 26, 0.1); /* Very subtle green tint */
+  --accent-primary: rgb(26, 124, 26);  
+  --accent-hover: rgb(20, 100, 20);   
+  --accent-soft: rgba(26, 124, 26, 0.1); 
 
   /* Status Colors - Harmonized with accent */
-  --success: rgb(26, 124, 26);         /* Same as accent-primary */
-  --warning: #b45309;                  /* Dark amber */
-  --error: #b91c1c;                    /* Dark red */
+  --success: rgb(26, 124, 26);         
+  --warning: #b45309;                 
+  --error: #b91c1c;                  
 
   /* Shadows */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
@@ -48,12 +48,12 @@
   --border-light: #1f1f1f;
 
   /* Accent (Adjusted for dark mode) */
-  --accent-primary: #338b30;          /* Your specified secondary as primary in dark */
-  --accent-hover: rgb(49, 110, 49);   /* Your primary as hover in dark */
+  --accent-primary: #338b30;          
+  --accent-hover: rgb(49, 110, 49);  
   --accent-soft: rgba(102, 187, 106, 0.15);
 
   /* Status Colors */
-  --success: #66bb6a;                 /* Bright green for dark mode */
+  --success: #66bb6a;                 
   --warning: #d97706;
   --error: #ef4444;
 
