@@ -1,1 +1,75 @@
 @import "tailwindcss";
+
+:root {
+  /* Backgrounds */
+  --bg-main: #ffffff;
+  --bg-secondary: #f7f7f7;
+  --bg-tertiary: #f1f1f1;
+
+  /* Text */
+  --text-main: #111111;
+  --text-secondary: #555555;
+  --text-muted: #777777;
+
+  /* Borders & Dividers */
+  --border-light: #e5e5e5;
+  --border-medium: #d1d1d1;
+
+  /* Accent (Red) */
+  --accent-primary: #dc2626;   /* red-600 */
+  --accent-hover: #b91c1c;     /* red-700 */
+  --accent-soft: #fee2e2;      /* red-100 */
+
+  /* Status Colors */
+  --success: #16a34a;
+  --warning: #f59e0b;
+  --error: #dc2626;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.08);
+
+  /* Transitions */
+  --transition-fast: 0.2s ease;
+  --transition-base: 0.3s ease;
+}
+
+
+.dark {
+  /* Backgrounds */
+  --bg-main: #0f0f0f;
+  --bg-secondary: #181818;
+  --bg-tertiary: #222222;
+
+  /* Text */
+  --text-main: #f5f5f5;
+  --text-secondary: #c7c7c7;
+  --text-muted: #9a9a9a;
+
+  /* Borders & Dividers */
+  --border-light: #2a2a2a;
+  --border-medium: #333333;
+
+  /* Accent (Red) */
+  --accent-primary: #ef4444;   /* red-500 */
+  --accent-hover: #dc2626;     /* red-600 */
+  --accent-soft: rgba(239, 68, 68, 0.15);
+
+  /* Status Colors */
+  --success: #22c55e;
+  --warning: #fbbf24;
+  --error: #ef4444;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
+  --shadow-md: 0 6px 14px rgba(0, 0, 0, 0.7);
+}
+
+
+body {
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  transition:
+    background-color var(--transition-base),
+    color var(--transition-base);
+}
