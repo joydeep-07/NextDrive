@@ -19,6 +19,9 @@
   --accent-hover: rgb(20, 100, 20);   
   --accent-soft: rgba(26, 124, 26, 0.1); 
 
+  /* blue Button */
+  --blue-button: #6366F1;
+
   /* Status Colors - Harmonized with accent */
   --success: rgb(26, 124, 26);         
   --warning: #b45309;                 
@@ -30,7 +33,7 @@
 
   /* Transitions */
   --transition-fast: 0.2s ease;
-  --transition-base: 0.3s ease;
+  --transition-base: 0.5s ease;
 
   /* Scrollbar Thumb */
   --scroll-thumb : rgb(185, 185, 185);
@@ -54,6 +57,9 @@
   --accent-primary: #41b13d;          
   --accent-hover: rgb(49, 110, 49);  
   --accent-soft: rgba(102, 187, 106, 0.15);
+
+    /* blue Button */
+  --blue-button: #6366F1;
 
   /* Status Colors */
   --success: #66bb6a;                 
@@ -99,9 +105,8 @@
 body {
   background-color: var(--bg-main);
   color: var(--text-main);
-  transition:
-    background-color var(--transition-base),
-    color var(--transition-base);
+  transition: var(--transition-base) ;
+    
 }
 
 /* Primary Button */
