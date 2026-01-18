@@ -73,3 +73,19 @@ body {
     background-color var(--transition-base),
     color var(--transition-base);
 }
+
+.primary_button {
+  background-color: var(--accent-primary); 
+  color: white; 
+  font: 10px;
+  font-weight: 600;
+  padding: 5px 30px;
+  border-radius: 9999px; 
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.primary_button:hover {
+  background-color:  var(--accent-hover); 
+  color: white;
+}
