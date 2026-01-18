@@ -3,66 +3,63 @@
 :root {
   /* Backgrounds */
   --bg-main: #ffffff;
-  --bg-secondary: #f7f7f7;
-  --bg-tertiary: #f1f1f1;
+  --bg-secondary: #cfcfcf;
+  --bg-tertiary: #f3f4f6;
 
   /* Text */
-  --text-main: #111111;
-  --text-secondary: #555555;
-  --text-muted: #777777;
+  --text-main: #1c1c1c;
+  --text-secondary: #353535;
+  --text-muted: #868686;
 
   /* Borders & Dividers */
-  --border-light: #e5e5e5;
-  --border-medium: #d1d1d1;
+   --border-light: #e0e0e0;
 
-  /* Accent (Red) */
-  --accent-primary: #dc2626;   
-  --accent-hover: #b91c1c;     
-  --accent-soft: #fee2e2;      
+  /* Accent (Your specified green palette) */
+  --accent-primary: rgb(26, 124, 26);  /* Deep rich green */
+  --accent-hover: rgb(20, 100, 20);    /* Slightly darker for hover */
+  --accent-soft: rgba(26, 124, 26, 0.1); /* Very subtle green tint */
 
-  /* Status Colors */
-  --success: #16a34a;
-  --warning: #f59e0b;
-  --error: #dc2626;
+  /* Status Colors - Harmonized with accent */
+  --success: rgb(26, 124, 26);         /* Same as accent-primary */
+  --warning: #b45309;                  /* Dark amber */
+  --error: #b91c1c;                    /* Dark red */
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 4px 10px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
 
   /* Transitions */
   --transition-fast: 0.2s ease;
   --transition-base: 0.3s ease;
 }
 
-
 .dark {
   /* Backgrounds */
-  --bg-main: #0f0f0f;
-  --bg-secondary: #181818;
-  --bg-tertiary: #222222;
+  --bg-main: #0a0a0a;
+  --bg-secondary: #1d1d1d;
+  --bg-tertiary: #2d2d2d;
 
   /* Text */
-  --text-main: #f5f5f5;
-  --text-secondary: #c7c7c7;
-  --text-muted: #9a9a9a;
+  --text-main: #b3b4b4;
+  --text-secondary: #dbdbdb;
+  --text-muted: #b5b5b5;
 
   /* Borders & Dividers */
-  --border-light: #2a2a2a;
-  --border-medium: #333333;
+  --border-light: #1f1f1f;
 
-  /* Accent (Red) */
-  --accent-primary: #ef4444;   /* red-500 */
-  --accent-hover: #dc2626;     /* red-600 */
-  --accent-soft: rgba(239, 68, 68, 0.15);
+  /* Accent (Adjusted for dark mode) */
+  --accent-primary: #338b30;          /* Your specified secondary as primary in dark */
+  --accent-hover: rgb(49, 110, 49);   /* Your primary as hover in dark */
+  --accent-soft: rgba(102, 187, 106, 0.15);
 
   /* Status Colors */
-  --success: #22c55e;
-  --warning: #fbbf24;
+  --success: #66bb6a;                 /* Bright green for dark mode */
+  --warning: #d97706;
   --error: #ef4444;
 
   /* Shadows */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.6);
-  --shadow-md: 0 6px 14px rgba(0, 0, 0, 0.7);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.8);
+  --shadow-md: 0 8px 25px rgba(102, 187, 106, 0.15);
 }
 
 
@@ -73,6 +70,8 @@ body {
     background-color var(--transition-base),
     color var(--transition-base);
 }
+
+/* Primary Button */
 
 .primary_button {
   background-color: var(--accent-primary); 
@@ -91,18 +90,22 @@ body {
 }
 
 
+ /* Secondary Button  */
 .secondary_button {
-  background-color: var(--bg-tertiary); 
-  color: white; 
+  background-color: var(--bg-secondary); 
+  color: var(--text-main); 
   font-weight: 600;
   padding: 5px 30px;
-  border-radius: 3px; 
+  border-radius: 3px;
   cursor: pointer;
   transition: all 0.3s ease;
   font-size: 15px;
+  border: 1px solid var(--border-light);
 }
 
 .secondary_button:hover {
-  background-color:  var(--bg-secondary); 
-  color: white;
+  background-color: var(--bg-tertiary);
+  color: var(--text-main);
 }
+
+
