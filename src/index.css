@@ -109,6 +109,10 @@ body {
     
 }
 
+button{
+  cursor: pointer;
+}
+
 /* Primary Button */
 
 .primary_button {

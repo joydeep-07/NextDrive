@@ -8,7 +8,7 @@ import {
 } from "react-icons/io5";
 import { Link } from "react-router-dom";
 
-const Register = ({ onSwitch }) => {
+const Register = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -111,7 +111,7 @@ const Register = ({ onSwitch }) => {
           Already have an account?{" "}
           <button
             type="button"
-            onClick={onSwitch}
+            onClick={onLogin}
             className="text-[var(--accent-primary)] hover:underline"
           >
             Login

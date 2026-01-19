@@ -6,11 +6,15 @@ import { Outlet } from 'react-router-dom'
 const Root = () => {
   return (
     <div>
-        <Navbar/>
-        <Outlet/>
-        <Footer/>
+      <div className="absolute top-0 w-full ">
+        <Navbar />
+      </div>
+      <div className='pt-10'>
+        <Outlet />
+      </div>
+      <Footer />
     </div>
-  )
+  );
 }
 
 export default Root
