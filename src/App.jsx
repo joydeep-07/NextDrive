@@ -4,7 +4,8 @@ import { Routes, Route } from "react-router-dom";
 
 import Root from "./layouts/Root";
 import Home from "./pages/Home";
-import Login from "./pages/Login";
+import Register from "./pages/Register";
+import Auth from "./pages/Auth";
 
 function App() {
   const theme = useSelector((state) => state.theme.mode);
@@ -22,7 +23,8 @@ function App() {
       {/* Layout Route */}
       <Route element={<Root />}>
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route path="/register" element={<Register />} />
       </Route>
     </Routes>
   );

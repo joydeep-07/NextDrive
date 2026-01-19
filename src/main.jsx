@@ -6,12 +6,15 @@ import { Provider } from 'react-redux'
 import { store } from './redux/store.js'
 import './scrollbar.css'
 import { BrowserRouter } from 'react-router-dom'
+import LenisProvider from './components/LenisProvider.jsx'
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <Provider store={store}>
       <BrowserRouter>
-        <App />
+        <LenisProvider>
+          <App />
+        </LenisProvider>
       </BrowserRouter>
     </Provider>
   </StrictMode>,

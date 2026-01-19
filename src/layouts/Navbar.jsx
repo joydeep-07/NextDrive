@@ -28,7 +28,7 @@ const Navbar = () => {
 
           <ThemeToggle />
 
-          <Link to="/login" className="primary_button">Sign Up</Link>
+          <Link to="/auth" className="primary_button">Sign Up</Link>
 
          
         </div>
