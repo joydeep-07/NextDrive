@@ -36,7 +36,7 @@ export default function Auth() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[var(--bg-main)]">
-      <div className="flex w-full max-w-6xl h-[700px] overflow-hidden px-4">
+      <div className="flex w-full max-w-6xl overflow-hidden px-4">
         {/* LEFT PANEL (UNCHANGED — SVG ALWAYS VISIBLE) */}
         <div className="w-1/2 h-[70vh] hidden md:flex relative flex-col justify-start">
           {" "}

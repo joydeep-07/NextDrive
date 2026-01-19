@@ -1,15 +1,40 @@
 import { useState } from "react";
-import { BsEye } from "react-icons/bs";
+import { useForm } from "react-hook-form";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { IoLockClosedOutline, IoMailOutline } from "react-icons/io5";
-import { Link } from "react-router-dom";
+
 const Login = ({ onRegister, onForgot }) => {
   const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+      password: "",
+      rememberMe: false,
+    },
+  });
+
+  const onSubmit = (data) => {
+    console.log("Login submitted:", data);
+    // Here you would normally call your login API
+    // e.g. await signIn(data.email, data.password);
+    // if (data.rememberMe) { /* handle remember me logic */ }
+  };
+
   return (
     <div>
       <div className="w-full flex items-center justify-center">
-        <form className="w-80 md:w-96 flex flex-col">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-80 md:w-96 flex flex-col"
+          noValidate
+        >
           <h2 className="text-4xl font-medium text-[var(--text-main)]">
             Sign in
           </h2>
@@ -26,7 +51,6 @@ const Login = ({ onRegister, onForgot }) => {
                 flex items-center justify-center
                 bg-[var(--bg-secondary)]
                 border border-[var(--border-light)]
-               
                 transition
               "
           >
@@ -61,9 +85,20 @@ const Login = ({ onRegister, onForgot }) => {
                   text-sm text-[var(--text-secondary)]
                   placeholder-[var(--text-muted)]
                 "
-              required
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: "Please enter a valid email",
+                },
+              })}
             />
           </div>
+          {errors.email && (
+            <p className="text-xs text-[var(--error)] mt-1 pl-6">
+              {errors.email.message}
+            </p>
+          )}
 
           {/* Password */}
           <div className="flex items-center gap-2 h-12 pl-6 pr-4 rounded-full mt-6 border border-[var(--border-light)]">
@@ -73,7 +108,13 @@ const Login = ({ onRegister, onForgot }) => {
               type={showPassword ? "text" : "password"}
               placeholder="Password"
               className="w-full h-full bg-transparent outline-none text-sm"
-              required
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
             />
 
             <button
@@ -84,6 +125,11 @@ const Login = ({ onRegister, onForgot }) => {
               {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
             </button>
           </div>
+          {errors.password && (
+            <p className="text-xs text-[var(--error)] mt-1 pl-6">
+              {errors.password.message}
+            </p>
+          )}
 
           {/* Remember / Forgot */}
           <div className="flex items-center justify-between mt-6 text-sm text-[var(--text-muted)]">
@@ -91,11 +137,16 @@ const Login = ({ onRegister, onForgot }) => {
               <input
                 type="checkbox"
                 className="accent-[var(--accent-primary)]"
+                {...register("rememberMe")}
               />
               Remember me
             </label>
 
-            <button onClick={onForgot} className="text-sm underline">
+            <button
+              type="button"
+              onClick={onForgot}
+              className="text-sm underline"
+            >
               Forgot password?
             </button>
           </div>
@@ -117,6 +168,7 @@ const Login = ({ onRegister, onForgot }) => {
           <p className="text-sm text-center mt-4">
             Don’t have an account?{" "}
             <button
+              type="button"
               onClick={onRegister}
               className="text-[var(--accent-primary)]"
             >
@@ -129,4 +181,4 @@ const Login = ({ onRegister, onForgot }) => {
   );
 };
 
-export default Login
+export default Login;

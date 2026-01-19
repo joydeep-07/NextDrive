@@ -1,34 +1,53 @@
 import { useState, useEffect, useRef } from "react";
+import { useForm } from "react-hook-form";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { IoMailOutline, IoLockClosedOutline } from "react-icons/io5";
 
 const ForgotPassword = ({ onBack }) => {
   const [stage, setStage] = useState("email"); // "email" | "otp" | "reset"
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPass, setShowNewPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
 
   const inputsRef = useRef([]);
 
-  // OTP auto-focus & paste
+  const {
+    register,
+    handleSubmit,
+    watch,
+    setValue,
+    formState: { errors },
+    reset: resetForm,
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+      otp: ["", "", "", "", "", ""],
+      newPassword: "",
+      confirmPassword: "",
+    },
+  });
+
+  const otpValue = watch("otp");
+  const newPassword = watch("newPassword");
+
+  // OTP auto-focus & paste handling
   useEffect(() => {
     if (stage !== "otp") return;
 
     const inputs = inputsRef.current;
 
     inputs.forEach((input, index) => {
+      if (!input) return;
+
       input.oninput = (e) => {
         if (e.inputType === "insertText" && e.target.value && index < 5) {
-          inputs[index + 1].focus();
+          inputs[index + 1]?.focus();
         }
       };
 
       input.onkeydown = (e) => {
         if (e.key === "Backspace" && !e.target.value && index > 0) {
-          inputs[index - 1].focus();
+          inputs[index - 1]?.focus();
         }
       };
 
@@ -36,49 +55,36 @@ const ForgotPassword = ({ onBack }) => {
         e.preventDefault();
         const data = e.clipboardData.getData("text").trim();
         if (/^\d{6}$/.test(data)) {
-          setOtp(data.split(""));
-          inputs[5].focus();
+          const digits = data.split("");
+          setValue("otp", digits);
+          inputs[5]?.focus();
         }
       };
     });
-  }, [stage]);
+  }, [stage, setValue]);
 
-  const handleSendOtp = (e) => {
-    e.preventDefault();
-    if (!email.trim()) return;
-    // TODO: API call to send OTP
-    console.log("Sending OTP to:", email);
+  const onSendOtp = (data) => {
+    console.log("Sending OTP to:", data.email);
+    // TODO: API call → send OTP
     setStage("otp");
+    // Optional: resetForm({ email: data.email }); // keep email if you want
   };
 
-  const handleVerifyOtp = (e) => {
-    e.preventDefault();
-    const code = otp.join("");
+  const onVerifyOtp = (data) => {
+    const code = data.otp.join("");
     if (code.length !== 6) return;
-    // TODO: API call to verify OTP
+
     console.log("Verifying OTP:", code);
+    // TODO: API call → verify OTP
     // On success:
     setStage("reset");
   };
 
-  const handleResetPassword = (e) => {
-    e.preventDefault();
-    if (newPassword !== confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
-    if (newPassword.length < 8) {
-      alert("Password must be at least 8 characters");
-      return;
-    }
-    // TODO: API call to reset password
-    console.log(
-      "Resetting password for:",
-      email,
-      "with new pass:",
-      newPassword,
-    );
-    // On success → maybe redirect or show success message
+  const onResetPassword = (data) => {
+    console.log("Resetting password for email:", watch("email"));
+    console.log("New password:", data.newPassword);
+
+    // TODO: API call → reset password
     alert("Password reset successful! You can now log in.");
     onBack?.();
   };
@@ -89,11 +95,12 @@ const ForgotPassword = ({ onBack }) => {
         className="w-80 md:w-96 flex flex-col"
         onSubmit={
           stage === "email"
-            ? handleSendOtp
+            ? handleSubmit(onSendOtp)
             : stage === "otp"
-              ? handleVerifyOtp
-              : handleResetPassword
+              ? handleSubmit(onVerifyOtp)
+              : handleSubmit(onResetPassword)
         }
+        noValidate
       >
         <h2 className="text-4xl font-heading font-medium text-[var(--text-main)]/95">
           {stage === "email"
@@ -121,12 +128,21 @@ const ForgotPassword = ({ onBack }) => {
               <input
                 type="email"
                 placeholder="Email id"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
                 className="w-full h-full bg-transparent outline-none text-sm text-[var(--text-secondary)] placeholder-[var(--text-muted)]"
-                required
+                {...register("email", {
+                  required: "Email is required",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                    message: "Please enter a valid email",
+                  },
+                })}
               />
             </div>
+            {errors.email && (
+              <p className="text-xs text-[var(--error)] mt-1 pl-6">
+                {errors.email.message}
+              </p>
+            )}
 
             <button
               type="submit"
@@ -143,18 +159,12 @@ const ForgotPassword = ({ onBack }) => {
         {stage === "otp" && (
           <>
             <div className="flex items-center justify-between gap-3 mt-8">
-              {otp.map((digit, i) => (
+              {Array.from({ length: 6 }).map((_, i) => (
                 <input
                   key={i}
                   ref={(el) => (inputsRef.current[i] = el)}
                   type="text"
                   maxLength={1}
-                  value={digit}
-                  onChange={(e) => {
-                    const newOtp = [...otp];
-                    newOtp[i] = e.target.value.replace(/\D/g, "");
-                    setOtp(newOtp);
-                  }}
                   className="
                     w-12 h-12 text-center text-xl font-medium
                     border border-[var(--border-light)]
@@ -162,9 +172,29 @@ const ForgotPassword = ({ onBack }) => {
                     focus:border-[var(--accent-primary)]
                     outline-none transition
                   "
+                  {...register(`otp.${i}`, {
+                    required: true,
+                    pattern: {
+                      value: /^\d$/,
+                      message: "",
+                    },
+                    onChange: (e) => {
+                      const val = e.target.value.replace(/\D/g, "");
+                      setValue(`otp.${i}`, val, { shouldValidate: true });
+                      if (val && i < 5) {
+                        inputsRef.current[i + 1]?.focus();
+                      }
+                    },
+                  })}
                 />
               ))}
             </div>
+
+            {(errors.otp || otpValue.some((v) => !v)) && (
+              <p className="text-xs text-[var(--error)] mt-2 text-center">
+                Please enter a valid 6-digit code
+              </p>
+            )}
 
             <button
               type="submit"
@@ -197,19 +227,28 @@ const ForgotPassword = ({ onBack }) => {
               <input
                 type={showNewPass ? "text" : "password"}
                 placeholder="New Password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
                 className="w-full h-full bg-transparent outline-none text-sm text-[var(--text-secondary)] placeholder-[var(--text-muted)]"
-                required
+                {...register("newPassword", {
+                  required: "New password is required",
+                  minLength: {
+                    value: 8,
+                    message: "Password must be at least 8 characters",
+                  },
+                })}
               />
               <button
                 type="button"
                 onClick={() => setShowNewPass(!showNewPass)}
                 className="text-[var(--text-muted)] hover:text-[var(--accent-primary)]"
               >
-                {showConfirmPass ? <FaRegEyeSlash /> : <FaRegEye />}
+                {showNewPass ? <FaRegEyeSlash /> : <FaRegEye />}
               </button>
             </div>
+            {errors.newPassword && (
+              <p className="text-xs text-[var(--error)] mt-1 pl-6">
+                {errors.newPassword.message}
+              </p>
+            )}
 
             {/* Confirm Password */}
             <div className="flex items-center gap-2 h-12 pl-6 pr-4 rounded-full mt-5 border border-[var(--border-light)]">
@@ -217,10 +256,12 @@ const ForgotPassword = ({ onBack }) => {
               <input
                 type={showConfirmPass ? "text" : "password"}
                 placeholder="Confirm New Password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
                 className="w-full h-full bg-transparent outline-none text-sm text-[var(--text-secondary)] placeholder-[var(--text-muted)]"
-                required
+                {...register("confirmPassword", {
+                  required: "Please confirm your password",
+                  validate: (value) =>
+                    value === newPassword || "Passwords do not match",
+                })}
               />
               <button
                 type="button"
@@ -230,6 +271,11 @@ const ForgotPassword = ({ onBack }) => {
                 {showConfirmPass ? <FaRegEyeSlash /> : <FaRegEye />}
               </button>
             </div>
+            {errors.confirmPassword && (
+              <p className="text-xs text-[var(--error)] mt-1 pl-6">
+                {errors.confirmPassword.message}
+              </p>
+            )}
 
             <button
               type="submit"

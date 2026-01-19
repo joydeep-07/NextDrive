@@ -1,19 +1,46 @@
 import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
 import {
   IoLockClosedOutline,
   IoMailOutline,
   IoPersonOutline,
 } from "react-icons/io5";
-import { Link } from "react-router-dom";
 
 const Register = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
 
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
+    mode: "onChange",
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const password = watch("password");
+
+  const onSubmit = (data) => {
+    console.log("Form submitted:", data);
+    // Here you would normally call your signup API
+    // e.g. await signUp(data);
+  };
+
   return (
     <div className="w-full flex items-center justify-center">
-      <form className="w-80 md:w-96 flex flex-col">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="w-80 md:w-96 flex flex-col"
+        noValidate
+      >
         <h2 className="text-4xl font-medium text-[var(--text-main)]">
           Sign Up
         </h2>
@@ -38,9 +65,20 @@ const Register = ({ onLogin }) => {
             type="text"
             placeholder="First name"
             className="w-full h-full bg-transparent outline-none text-sm"
-            required
+            {...register("firstName", {
+              required: "First name is required",
+              minLength: {
+                value: 2,
+                message: "At least 2 characters",
+              },
+            })}
           />
         </div>
+        {errors.firstName && (
+          <p className="text-xs text-[var(--error)] mt-1 pl-6">
+            {errors.firstName.message}
+          </p>
+        )}
 
         {/* Last Name */}
         <div className="flex items-center gap-2 h-12 pl-6 rounded-full mt-4 border border-[var(--border-light)]">
@@ -49,9 +87,20 @@ const Register = ({ onLogin }) => {
             type="text"
             placeholder="Last name"
             className="w-full h-full bg-transparent outline-none text-sm"
-            required
+            {...register("lastName", {
+              required: "Last name is required",
+              minLength: {
+                value: 2,
+                message: "At least 2 characters",
+              },
+            })}
           />
         </div>
+        {errors.lastName && (
+          <p className="text-xs text-[var(--error)] mt-1 pl-6">
+            {errors.lastName.message}
+          </p>
+        )}
 
         {/* Email */}
         <div className="flex items-center gap-2 h-12 pl-6 rounded-full mt-4 border border-[var(--border-light)]">
@@ -60,9 +109,20 @@ const Register = ({ onLogin }) => {
             type="email"
             placeholder="Email address"
             className="w-full h-full bg-transparent outline-none text-sm"
-            required
+            {...register("email", {
+              required: "Email is required",
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: "Invalid email address",
+              },
+            })}
           />
         </div>
+        {errors.email && (
+          <p className="text-xs text-[var(--error)] mt-1 pl-6">
+            {errors.email.message}
+          </p>
+        )}
 
         {/* Password */}
         <div className="flex items-center gap-2 h-12 pl-6 pr-4 rounded-full mt-6 border border-[var(--border-light)]">
@@ -71,7 +131,13 @@ const Register = ({ onLogin }) => {
             type={showPassword ? "text" : "password"}
             placeholder="Password"
             className="w-full h-full bg-transparent outline-none text-sm"
-            required
+            {...register("password", {
+              required: "Password is required",
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
+            })}
           />
           <button
             type="button"
@@ -81,6 +147,11 @@ const Register = ({ onLogin }) => {
             {showPassword ? <FaRegEyeSlash /> : <FaRegEye />}
           </button>
         </div>
+        {errors.password && (
+          <p className="text-xs text-[var(--error)] mt-1 pl-6">
+            {errors.password.message}
+          </p>
+        )}
 
         {/* Confirm Password */}
         <div className="flex items-center gap-2 h-12 pl-6 pr-4 rounded-full mt-4 border border-[var(--border-light)]">
@@ -89,9 +160,18 @@ const Register = ({ onLogin }) => {
             type={showPassword ? "text" : "password"}
             placeholder="Confirm password"
             className="w-full h-full bg-transparent outline-none text-sm"
-            required
+            {...register("confirmPassword", {
+              required: "Please confirm your password",
+              validate: (value) =>
+                value === password || "Passwords do not match",
+            })}
           />
         </div>
+        {errors.confirmPassword && (
+          <p className="text-xs text-[var(--error)] mt-1 pl-6">
+            {errors.confirmPassword.message}
+          </p>
+        )}
 
         {/* Submit */}
         <button
