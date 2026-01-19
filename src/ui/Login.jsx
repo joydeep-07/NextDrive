@@ -4,8 +4,8 @@ import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { IoLockClosedOutline, IoMailOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
-const Login = () => {
-    const [showPassword, setShowPassword] = useState(false);
+const Login = ({ onSwitch }) => {
+  const [showPassword, setShowPassword] = useState(false);
   return (
     <div>
       <div className="w-full flex items-center justify-center">
@@ -117,19 +117,20 @@ const Login = () => {
           </button>
 
           {/* Signup */}
-          <p className="text-sm text-[var(--text-muted)] mt-4 text-center">
+          <p className="text-sm text-center mt-4">
             Don’t have an account?{" "}
-            <Link
-              to="/register"
+            <button
+              type="button"
+              onClick={onSwitch}
               className="text-[var(--accent-primary)] hover:underline"
             >
               Sign up
-            </Link>
+            </button>
           </p>
         </form>
       </div>
     </div>
   );
-}
+};
 
 export default Login

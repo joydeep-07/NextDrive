@@ -17,7 +17,7 @@
   /* Accent (Your specified green palette) */
   --accent-primary: rgb(45, 146, 45);  
   --accent-hover: rgb(20, 100, 20);   
-  --accent-soft: rgba(26, 124, 26, 0.1); 
+  --accent-soft: #588157;
 
   /* blue Button */
   --blue-button: #6366F1;
@@ -56,7 +56,7 @@
   /* Accent (Adjusted for dark mode) */
   --accent-primary: #41b13d;          
   --accent-hover: rgb(49, 110, 49);  
-  --accent-soft: rgba(102, 187, 106, 0.15);
+  --accent-soft: #588157;
 
     /* blue Button */
   --blue-button: #6366F1;

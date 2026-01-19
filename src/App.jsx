@@ -4,7 +4,6 @@ import { Routes, Route } from "react-router-dom";
 
 import Root from "./layouts/Root";
 import Home from "./pages/Home";
-import Register from "./pages/Register";
 import Auth from "./pages/Auth";
 
 function App() {
@@ -24,7 +23,6 @@ function App() {
       <Route element={<Root />}>
         <Route path="/" element={<Home />} />
         <Route path="/auth" element={<Auth />} />
-        <Route path="/register" element={<Register />} />
       </Route>
     </Routes>
   );
