@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/slices/authSlice";
 import LogoutButton from "../ui/LogoutButton";
 import { FaSearch } from "react-icons/fa";
+import UserDetail from "../ui/UserDetail";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -41,7 +42,7 @@ const Navbar = () => {
           {isAuthenticated && (
             <div>
               <div class="flex items-center border pl-4 gap-2 border-[var(--border-light)]/90 h-10 w-md rounded-full overflow-hidden max-w-md">
-               <FaSearch className="text-[var(--text-secondary)]/50 "/>
+                <FaSearch className="text-[var(--text-secondary)]/50 " />
                 <input
                   type="text"
                   placeholder="Search"
@@ -49,18 +50,19 @@ const Navbar = () => {
                 />
               </div>
             </div>
-          ) }
+          )}
 
-          <ThemeToggle />
+          {isAuthenticated && (
+            <div>
+              <UserDetail />
+            </div>
+          )}
 
-          {!isAuthenticated ? (
+          {!isAuthenticated && <ThemeToggle />}
+          {!isAuthenticated && (
             <Link to="/auth" className="primary_button">
               Sign In
             </Link>
-          ) : (
-            <button onClick={handleLogout} className="primary_button">
-              Logout
-            </button>
           )}
         </div>
 
@@ -91,7 +93,7 @@ const Navbar = () => {
                 Home
               </Link>
 
-              <ThemeToggle />
+              {!isAuthenticated && <ThemeToggle />}
 
               {!isAuthenticated ? (
                 <Link

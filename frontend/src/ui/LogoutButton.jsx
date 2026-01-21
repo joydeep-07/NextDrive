@@ -17,12 +17,12 @@ const LogoutButton = () => {
     <button
       onClick={handleLogout}
       className="
-        px-5 py-2 rounded-full
+        px-5 py-2 bg-[var(--error)] w-full rounded
         text-sm font-medium
-        border border-[var(--border-light)]
-        text-[var(--text-main)]
+       
+        text-white
         hover:text-white
-        hover:bg-[var(--accent-primary)]
+        
         transition
         active:scale-95
       "
