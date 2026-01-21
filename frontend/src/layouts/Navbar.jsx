@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/slices/authSlice";
 import LogoutButton from "../ui/LogoutButton";
+import { FaSearch } from "react-icons/fa";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -17,7 +18,7 @@ const Navbar = () => {
   const handleLogout = () => {
     dispatch(logout());
     setOpen(false);
-    // navigate("/auth"); 
+    // navigate("/auth");
   };
 
   return (
@@ -36,7 +37,20 @@ const Navbar = () => {
         </Link>
 
         {/* Desktop Right Section */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden md:flex w-2xl items-center justify-end gap-6">
+          {isAuthenticated && (
+            <div>
+              <div class="flex items-center border pl-4 gap-2 border-[var(--border-light)]/90 h-10 w-md rounded-full overflow-hidden max-w-md">
+               <FaSearch className="text-[var(--text-secondary)]/50 "/>
+                <input
+                  type="text"
+                  placeholder="Search"
+                  class="w-full h-full outline-none text-[var(--text-main)] bg-transparent placeholder-[var(--text-muted)]/50 text-sm"
+                />
+              </div>
+            </div>
+          ) }
+
           <ThemeToggle />
 
           {!isAuthenticated ? (
