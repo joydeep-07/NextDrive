@@ -1,10 +1,23 @@
 import React, { useState } from "react";
 import ThemeToggle from "../components/ThemeToggle";
 import { MdMenu } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { logout } from "../redux/slices/authSlice";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  const handleLogout = () => {
+    dispatch(logout());
+    setOpen(false);
+    navigate("/auth"); 
+  };
 
   return (
     <header className="w-full">
@@ -24,13 +37,17 @@ const Navbar = () => {
 
         {/* Desktop Right Section */}
         <div className="hidden md:flex items-center gap-6">
-         
-
           <ThemeToggle />
 
-          <Link to="/auth" className="primary_button">Sign Up</Link>
-
-         
+          {!isAuthenticated ? (
+            <Link to="/auth" className="primary_button">
+              Sign In
+            </Link>
+          ) : (
+            <button onClick={handleLogout} className="primary_button">
+              Logout
+            </button>
+          )}
         </div>
 
         {/* Mobile Menu Button */}
@@ -52,26 +69,38 @@ const Navbar = () => {
             }}
           >
             <div className="flex flex-col gap-5">
-              <a
-                href="/"
+              <Link
+                to="/"
                 onClick={() => setOpen(false)}
                 className="hover:text-[var(--accent-primary)] transition"
               >
                 Home
-              </a>
+              </Link>
 
               <ThemeToggle />
 
-              <a
-                href="/signup"
-                onClick={() => setOpen(false)}
-                className="text-center px-5 py-2 rounded-full text-white transition active:scale-95"
-                style={{
-                  backgroundColor: "var(--accent-primary)",
-                }}
-              >
-                Sign up
-              </a>
+              {!isAuthenticated ? (
+                <Link
+                  to="/auth"
+                  onClick={() => setOpen(false)}
+                  className="text-center px-5 py-2 rounded-full text-white transition active:scale-95"
+                  style={{
+                    backgroundColor: "var(--accent-primary)",
+                  }}
+                >
+                  Sign In
+                </Link>
+              ) : (
+                <button
+                  onClick={handleLogout}
+                  className="text-center px-5 py-2 rounded-full text-white transition active:scale-95"
+                  style={{
+                    backgroundColor: "var(--accent-primary)",
+                  }}
+                >
+                  Logout
+                </button>
+              )}
             </div>
           </div>
         )}

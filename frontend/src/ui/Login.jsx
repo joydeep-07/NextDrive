@@ -1,14 +1,18 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { IoLockClosedOutline, IoMailOutline } from "react-icons/io5";
-import { AUTH_ENDPOINTS } from "../api/endpoint";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../redux/slices/authSlice";
 
 const Login = ({ onRegister, onForgot }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+
+  const dispatch = useDispatch();
+  const { loading, error, isAuthenticated } = useSelector(
+    (state) => state.auth,
+  );
 
   const {
     register,
@@ -24,61 +28,21 @@ const Login = ({ onRegister, onForgot }) => {
     },
   });
 
-  const onSubmit = async (data) => {
-    setLoading(true);
-    setErrorMessage("");
-
-    const payload = {
-      email: data.email.trim(),
-      password: data.password,
-    };
-
-    try {
-      const response = await fetch(AUTH_ENDPOINTS.LOGIN, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        // Examples: "Invalid credentials", "User not found", etc.
-        throw new Error(result.message || "Login failed");
-      }
-
-      // ───────────────────────────────────────
-      // SUCCESS - store token & redirect / update app state
-      // ───────────────────────────────────────
-      console.log("Login successful:", result);
-
-      // Most common patterns (choose one):
-      // 1. JWT in localStorage (simple but less secure than httpOnly cookie)
-      localStorage.setItem("token", result.token);
-
-      // 2. Or httpOnly cookie (more secure) — backend must set it
-      // (no client code needed in this case)
-
-      // 3. Or context / redux / zustand → set user & token
-      // setUser(result.user);
-      // setIsAuthenticated(true);
-
-      reset(); // optional
-      setErrorMessage("");
-      alert("Logged in successfully!"); // ← replace with real navigation
-
-      // Example: redirect
-      // window.location.href = "/dashboard";
-      // or use react-router: navigate("/dashboard")
-    } catch (err) {
-      console.error("Login error:", err);
-      setErrorMessage(err.message || "Unable to sign in. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const onSubmit = (data) => {
+    dispatch(
+      loginUser({
+        email: data.email.trim(),
+        password: data.password,
+      }),
+    );
   };
+
+  /* Optional: clear form on successful login */
+  useEffect(() => {
+    if (isAuthenticated) {
+      reset();
+    }
+  }, [isAuthenticated, reset]);
 
   return (
     <div>
@@ -91,20 +55,21 @@ const Login = ({ onRegister, onForgot }) => {
           <h2 className="font-heading text-4xl font-medium text-[var(--text-main)]">
             Sign <span className="text-[var(--accent-primary)]">In</span>
           </h2>
+
           <p className="text-sm text-[var(--text-secondary)] mt-3">
             Welcome back! Please sign in to continue
           </p>
 
-          {/* Google Button */}
+          {/* Google Button (UI only for now) */}
           <button
             type="button"
             className="
-                w-full mt-8 h-12 rounded-full
-                flex items-center justify-center
-                bg-[var(--bg-secondary)]
-                border border-[var(--border-light)]
-                transition
-              "
+              w-full mt-8 h-12 rounded-full
+              flex items-center justify-center
+              bg-[var(--bg-secondary)]
+              border border-[var(--border-light)]
+              transition
+            "
           >
             <FcGoogle className="text-2xl mr-2" />
             <h1 className="text-sm font-medium">Google</h1>
@@ -119,31 +84,31 @@ const Login = ({ onRegister, onForgot }) => {
             <div className="flex-1 h-px bg-[var(--border-light)]" />
           </div>
 
-          {/* Backend / network error message */}
-          {errorMessage && (
+          {/* Backend / Auth Error */}
+          {error && (
             <p className="text-xs text-[var(--error)] text-center mb-4">
-              {errorMessage}
+              {error}
             </p>
           )}
 
           {/* Email */}
           <div
             className="
-                flex items-center gap-2
-                h-12 pl-6 rounded-full
-                border border-[var(--border-light)]
-                bg-transparent
-              "
+              flex items-center gap-2
+              h-12 pl-6 rounded-full
+              border border-[var(--border-light)]
+              bg-transparent
+            "
           >
             <IoMailOutline className="text-[var(--text-muted)]" />
             <input
               type="email"
               placeholder="Email id"
               className="
-                  w-full h-full bg-transparent outline-none
-                  text-sm text-[var(--text-secondary)]
-                  placeholder-[var(--text-muted)]
-                "
+                w-full h-full bg-transparent outline-none
+                text-sm text-[var(--text-secondary)]
+                placeholder-[var(--text-muted)]
+              "
               {...register("email", {
                 required: "Email is required",
                 pattern: {
@@ -162,6 +127,7 @@ const Login = ({ onRegister, onForgot }) => {
           {/* Password */}
           <div className="flex items-center gap-2 h-12 pl-6 pr-4 rounded-full mt-6 border border-[var(--border-light)]">
             <IoLockClosedOutline className="text-[var(--text-muted)]" />
+
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
@@ -174,6 +140,7 @@ const Login = ({ onRegister, onForgot }) => {
                 },
               })}
             />
+
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -198,7 +165,8 @@ const Login = ({ onRegister, onForgot }) => {
               />
               Remember me
             </label>
-            {/* Uncomment when you implement forgot password */}
+
+            {/* Enable later */}
             {/* <button
               type="button"
               onClick={onForgot}
@@ -213,12 +181,12 @@ const Login = ({ onRegister, onForgot }) => {
             type="submit"
             disabled={loading}
             className={`
-                mt-8 h-11 rounded-full
-                bg-[var(--blue-button)]
-                text-white font-medium
-                transition
-                ${loading ? "opacity-60 cursor-not-allowed" : "hover:opacity-90"}
-              `}
+              mt-8 h-11 rounded-full
+              bg-[var(--blue-button)]
+              text-white font-medium
+              transition
+              ${loading ? "opacity-60 cursor-not-allowed" : "hover:opacity-90"}
+            `}
           >
             {loading ? "Signing in..." : "Login"}
           </button>
