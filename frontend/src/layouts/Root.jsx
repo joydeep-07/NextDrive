@@ -9,7 +9,7 @@ const Root = () => {
       <div className="absolute top-0 w-full ">
         <Navbar />
       </div>
-      <div className='pt-10'>
+      <div className='pt-[70px]'>
         <Outlet />
       </div>
       <Footer />
