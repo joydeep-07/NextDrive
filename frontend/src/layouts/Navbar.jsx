@@ -21,13 +21,12 @@ const Navbar = () => {
   };
 
   return (
-    <header className="w-full">
+    <header className="w-full bg-[var(--bg-main)] border-b border-[var(--border-light)]/40 z-50 fixed top-0">
       <nav
         className="relative flex h-[70px] items-center justify-between px-6 md:px-16 lg:px-24 xl:px-32"
         style={{
           backgroundColor: "var(--bg-main)",
           color: "var(--text-main)",
-          borderBottom: "1px solid var(--border-light)",
         }}
       >
         {/* Logo */}
@@ -91,7 +90,9 @@ const Navbar = () => {
                 >
                   Sign In
                 </Link>
-              ) : <LogoutButton/> }
+              ) : (
+                <LogoutButton />
+              )}
             </div>
           </div>
         )}
