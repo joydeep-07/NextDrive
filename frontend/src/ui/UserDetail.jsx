@@ -14,12 +14,24 @@ const UserDetail = () => {
   const { mode } = useSelector((state) => state.theme);
   const isDark = mode === "dark";
 
-  const fakeUser = {
-    name: "Joydeep",
-    email: "joydeep@example.com",
-  };
+  // Get real user data from auth slice
+  const { user, isAuthenticated } = useSelector((state) => state.auth);
 
-  // Close when clicking outside
+  // Fallback values
+  const firstName = user?.firstName || "user";
+  const lastName = user?.lastName || "";
+  const email = user?.email || "Not available";
+
+  // Build display name: "First Last" or just "First" or "User"
+  const displayName =
+    [firstName, lastName]
+      .filter(Boolean) // remove empty strings
+      .join(" ") || "User";
+
+  // Initial for avatar
+  const avatarInitial = firstName.charAt(0).toUpperCase() || "U";
+
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (
@@ -42,6 +54,10 @@ const UserDetail = () => {
   }, [isOpen]);
 
   const toggleDropdown = () => setIsOpen((prev) => !prev);
+
+  if (!isAuthenticated) {
+    return null; // or show login button
+  }
 
   return (
     <div className="relative">
@@ -79,7 +95,6 @@ const UserDetail = () => {
               bg-[var(--bg-secondary)]/20 
               border border-[var(--border-light)]/50 
               rounded-xl 
-            
               overflow-hidden z-50
               backdrop-blur-sm
             `}
@@ -87,7 +102,7 @@ const UserDetail = () => {
             {/* Header / User info */}
             <div className="px-5 py-4 border-b border-[var(--border-light)]/50">
               <div className="flex items-center gap-3">
-                {/* Avatar circle – using accent color */}
+                {/* Avatar circle */}
                 <div
                   className={`
                     w-10 h-10 rounded-full 
@@ -96,15 +111,15 @@ const UserDetail = () => {
                     text-white font-medium text-lg
                   `}
                 >
-                  {fakeUser.name.charAt(0)}
+                  {avatarInitial}
                 </div>
 
                 <div>
                   <p className="font-medium text-[var(--text-main)]">
-                    {fakeUser.name}
+                    {displayName}
                   </p>
                   <p className="text-sm text-[var(--text-muted)] mt-0.5">
-                    {fakeUser.email}
+                    {email}
                   </p>
                 </div>
               </div>
@@ -128,7 +143,6 @@ const UserDetail = () => {
                     {isDark ? "Light Mode" : "Dark Mode"}
                   </span>
 
-                  {/* Toggle switch */}
                   <div
                     className={`
                       relative w-11 h-6 rounded-full 
