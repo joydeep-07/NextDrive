@@ -12,7 +12,7 @@ const Root = () => {
       <div className='pt-[70px]'>
         <Outlet />
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

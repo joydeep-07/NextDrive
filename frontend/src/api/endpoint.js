@@ -7,3 +7,16 @@ export const AUTH_ENDPOINTS = {
   LOGIN: `${BASE_URL}/users/login`,
 };
 
+// Folder endpoints
+export const FOLDER_ENDPOINTS = {
+  CREATE: `${BASE_URL}/folders`,
+  GET_BY_ID: (folderId) => `${BASE_URL}/folders/${folderId}`,
+  SEND_INVITE: `${BASE_URL}/folders/invite`,
+  ACCEPT_INVITE: `${BASE_URL}/folders/accept`,
+};
+
+// File endpoints
+export const FILE_ENDPOINTS = {
+  UPLOAD: `${BASE_URL}/files/upload`,
+  GET_BY_FOLDER: (folderId) => `${BASE_URL}/files/${folderId}`,
+};

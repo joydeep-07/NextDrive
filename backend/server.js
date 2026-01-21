@@ -11,11 +11,13 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// DB Connection
+// Database Connection
 connectDB();
 
 // Routes
 app.use("/api/users", require("./routes/User.routes"));
+app.use("/api/folders", require("./routes/Folder.route"));
+app.use("/api/files", require("./routes/File.route"));
 
 app.get("/", (req, res) => {
   res.send("Backend running 🚀");

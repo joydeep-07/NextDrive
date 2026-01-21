@@ -1,9 +1,27 @@
-import React from 'react'
+import { useState } from "react";
+import CreateFolderButton from "../components/CreateFolderButton";
 
 const Dashboard = () => {
-  return (
-    <div className='h-screen text-2xl uppercase text-center text-[var(--text-secondary)]/70 pt-25 '> This is Dashboard Page</div>
-  )
-}
+  const [folders, setFolders] = useState([]);
 
-export default Dashboard
+  return (
+    <div className="p-6">
+      <CreateFolderButton
+        onCreated={(folder) => setFolders([folder, ...folders])}
+      />
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+        {folders.map((folder) => (
+          <div
+            key={folder._id}
+            className="p-4 border rounded-lg cursor-pointer"
+          >
+            📁 {folder.name}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
+export default Dashboard;
