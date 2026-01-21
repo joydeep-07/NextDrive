@@ -42,7 +42,7 @@ export default function Auth() {
           {/* Decorative SVG */}
           <svg
             className="hidden md:block absolute -bottom-90 pointer-events-none opacity-10 text-[var(--text-main)]"
-            viewBox="0 0 90 95"
+            viewBox="0 0 90 110"
           >
             <path
               d="M16.141 0C13.4854 0 10.9387 1.04871 9.06091 2.91543L2.93268 9.00761C1.05492 10.8743 0 13.4061 0 16.0461C0 21.5435 4.48289 26 10.0128 26C12.6684 26 15.2152 24.9512 17.0929 23.0845L21.3319 18.8705L33.6827 6.59239C34.5795 5.70086 35.7958 5.2 37.0641 5.2C39.1874 5.2 40.9876 6.57576 41.6117 8.47953L45.5096 4.60457C43.7314 1.83589 40.6134 0 37.0641 0C34.4085 0 31.8617 1.04871 29.984 2.91543L13.3943 19.4076C12.4974 20.2992 11.2811 20.8 10.0128 20.8C7.37176 20.8 5.23077 18.6716 5.23077 16.0461C5.23077 14.7852 5.73459 13.5761 6.63139 12.6845L12.7596 6.59239C13.6564 5.70086 14.8727 5.2 16.141 5.2C18.2645 5.2 20.0645 6.57582 20.6887 8.47965L24.5866 4.60466C22.8084 1.83595 19.6904 0 16.141 0Z"
@@ -54,17 +54,17 @@ export default function Auth() {
             />
           </svg>
 
-          <h1 className="uppercase font-heading text-4xl text-[var(--text-main)] font-medium tracking-wide">
+          {/* <h1 className="uppercase font-heading text-4xl text-[var(--text-main)] font-medium tracking-wide">
             Next Cloud
           </h1>
           <p className="text-sm pb-10 max-w-md text-[var(--text-secondary)]/80 leading-relaxed">
             All your work, one secure cloud. Seamlessly. Securely. Anywhere.
-          </p>
+          </p> */}
 
           <div className="pb-15 max-w-md">
             <h2 className="text-4xl font-medium font-heading text-[var(--text-secondary)]/90 leading-tight">
               Store,{" "}
-              <span className="text-[var(--accent-soft)]">
+              <span className="text-[var(--accent-primary)]/90">
                 Share & Collaborate
               </span>
               <br /> Without Limits
@@ -73,6 +73,9 @@ export default function Auth() {
               A secure cloud workspace built for storing, sharing, and
               collaborating on files effortlessly with complete control and
               modern performance.
+            </p>
+            <p className="text-sm pb-10 max-w-md text-[var(--text-secondary)]/80 leading-relaxed">
+              All your work, one secure cloud. Seamlessly. Securely. Anywhere.
             </p>
           </div>
 
@@ -112,7 +115,7 @@ export default function Auth() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-                className="w-full flex justify-center" // ← absolute removed here
+                className="w-full flex justify-center" 
               >
                 <Login
                   onRegister={() => switchForm("register")}
@@ -130,7 +133,7 @@ export default function Auth() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-                className="w-full flex justify-center" // ← absolute removed here
+                className="w-full flex justify-center" 
               >
                 <Register onLogin={() => switchForm("login")} />
               </motion.div>
@@ -145,7 +148,7 @@ export default function Auth() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-                className="w-full flex justify-center" // ← absolute removed here
+                className="w-full flex justify-center" 
               >
                 <ForgotPasswod onBack={() => switchForm("login")} />
               </motion.div>

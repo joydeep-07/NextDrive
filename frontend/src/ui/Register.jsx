@@ -41,8 +41,8 @@ const Register = ({ onLogin }) => {
         className="w-80 md:w-96 flex flex-col"
         noValidate
       >
-        <h2 className="text-4xl font-medium text-[var(--text-main)]">
-          Sign Up
+        <h2 className=" font-heading text-4xl font-medium text-[var(--text-main)]">
+          Sign <span className="text-[var(--accent-primary)]" >Up</span>
         </h2>
 
         <p className="text-sm text-[var(--text-secondary)] mt-3">
@@ -58,49 +58,55 @@ const Register = ({ onLogin }) => {
           <div className="flex-1 h-px bg-[var(--border-light)]" />
         </div>
 
-        {/* First Name */}
-        <div className="flex items-center gap-2 h-12 pl-6 rounded-full border border-[var(--border-light)]">
-          <IoPersonOutline className="text-[var(--text-muted)]" />
-          <input
-            type="text"
-            placeholder="First name"
-            className="w-full h-full bg-transparent outline-none text-sm"
-            {...register("firstName", {
-              required: "First name is required",
-              minLength: {
-                value: 2,
-                message: "At least 2 characters",
-              },
-            })}
-          />
-        </div>
-        {errors.firstName && (
-          <p className="text-xs text-[var(--error)] mt-1 pl-6">
-            {errors.firstName.message}
-          </p>
-        )}
+        <div className="flex items-center justify-center gap-2">
+          {/* First Name */}
+          <div>
+            <div className="flex items-center gap-2 h-12 pl-6 rounded-full border border-[var(--border-light)]">
+              <IoPersonOutline className="text-[var(--text-muted)]" />
+              <input
+                type="text"
+                placeholder="First name"
+                className="w-full h-full bg-transparent outline-none text-sm"
+                {...register("firstName", {
+                  required: "First name is required",
+                  minLength: {
+                    value: 2,
+                    message: "At least 2 characters",
+                  },
+                })}
+              />
+            </div>
+            {errors.firstName && (
+              <p className="text-xs text-[var(--error)] mt-1 pl-6">
+                {errors.firstName.message}
+              </p>
+            )}
+          </div>
 
-        {/* Last Name */}
-        <div className="flex items-center gap-2 h-12 pl-6 rounded-full mt-4 border border-[var(--border-light)]">
-          <IoPersonOutline className="text-[var(--text-muted)]" />
-          <input
-            type="text"
-            placeholder="Last name"
-            className="w-full h-full bg-transparent outline-none text-sm"
-            {...register("lastName", {
-              required: "Last name is required",
-              minLength: {
-                value: 2,
-                message: "At least 2 characters",
-              },
-            })}
-          />
+          {/* Last Name */}
+          <div>
+            <div className="flex items-center gap-2 h-12 pl-6 rounded-full border border-[var(--border-light)]">
+              <IoPersonOutline className="text-[var(--text-muted)]" />
+              <input
+                type="text"
+                placeholder="Last name"
+                className="w-full h-full bg-transparent outline-none text-sm"
+                {...register("lastName", {
+                  required: "Last name is required",
+                  minLength: {
+                    value: 2,
+                    message: "At least 2 characters",
+                  },
+                })}
+              />
+            </div>
+            {errors.lastName && (
+              <p className="text-xs text-[var(--error)] mt-1 pl-6">
+                {errors.lastName.message}
+              </p>
+            )}
+          </div>
         </div>
-        {errors.lastName && (
-          <p className="text-xs text-[var(--error)] mt-1 pl-6">
-            {errors.lastName.message}
-          </p>
-        )}
 
         {/* Email */}
         <div className="flex items-center gap-2 h-12 pl-6 rounded-full mt-4 border border-[var(--border-light)]">

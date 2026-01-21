@@ -14,13 +14,7 @@ const ThemeToggle = () => {
     <button
       onClick={() => dispatch(toggleTheme())}
       aria-label="Toggle theme"
-      className="
-        h-9 w-9
-        rounded-full
-        flex items-center justify-center
-        backdrop-blur-xl
-        cursor-pointer
-      "
+      className=" h-9 w-9 flex items-center justify-center cursor-pointer"
     >
       <AnimatePresence mode="wait" initial={false}>
         {isDark ? (
@@ -30,7 +24,7 @@ const ThemeToggle = () => {
             animate={{ rotate: 0, scale: 1, opacity: 1 }}
             exit={{ rotate: 180, scale: 0.6, opacity: 0 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="text-gray-100 text-lg"
+            className="text-[var(--text-main)] text-lg"
           >
             <FaRegMoon size={16} />
           </motion.span>
@@ -41,7 +35,7 @@ const ThemeToggle = () => {
             animate={{ rotate: 0, scale: 1, opacity: 1 }}
             exit={{ rotate: -180, scale: 0.6, opacity: 0 }}
             transition={{ duration: 0.35, ease: "easeOut" }}
-            className="text-neutral-800"
+            className="text-[var(--text-main)] text-lg"
           >
             <IoSunnyOutline size={16} />
           </motion.span>

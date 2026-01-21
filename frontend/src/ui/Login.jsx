@@ -35,8 +35,8 @@ const Login = ({ onRegister, onForgot }) => {
           className="w-80 md:w-96 flex flex-col"
           noValidate
         >
-          <h2 className="text-4xl font-medium text-[var(--text-main)]">
-            Sign in
+          <h2 className=" font-heading text-4xl font-medium text-[var(--text-main)]">
+            Sign <span className="text-[var(--accent-primary)]">In</span>
           </h2>
 
           <p className="text-sm text-[var(--text-secondary)] mt-3">
@@ -142,13 +142,13 @@ const Login = ({ onRegister, onForgot }) => {
               Remember me
             </label>
 
-            <button
+            {/* <button
               type="button"
               onClick={onForgot}
               className="text-sm underline"
             >
               Forgot password?
-            </button>
+            </button> */}
           </div>
 
           {/* Submit */}
