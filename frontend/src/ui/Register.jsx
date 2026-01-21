@@ -6,15 +6,19 @@ import {
   IoMailOutline,
   IoPersonOutline,
 } from "react-icons/io5";
+import { AUTH_ENDPOINTS } from "../api/endpoint"; 
 
 const Register = ({ onLogin }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false); 
+  const [errorMessage, setErrorMessage] = useState(""); 
 
   const {
     register,
     handleSubmit,
     watch,
     formState: { errors },
+    reset,
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -28,10 +32,45 @@ const Register = ({ onLogin }) => {
 
   const password = watch("password");
 
-  const onSubmit = (data) => {
-    console.log("Form submitted:", data);
-    // Here you would normally call your signup API
-    // e.g. await signUp(data);
+  const onSubmit = async (data) => {
+    setLoading(true);
+    setErrorMessage("");
+
+    // Prepare payload – remove confirmPassword
+    const payload = {
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      email: data.email.trim(),
+      password: data.password,
+    };
+
+    try {
+      const response = await fetch(AUTH_ENDPOINTS.REGISTER, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        // Backend sent error (e.g. "Email already exists")
+        throw new Error(result.message || "Registration failed");
+      }
+
+      // Success
+      console.log("Registration successful:", result);
+      reset(); // optional: clear form
+      alert("Account created! You can now log in."); // ← replace with better UX later
+      onLogin?.(); // switch to login view if you want
+    } catch (err) {
+      console.error("Registration error:", err);
+      setErrorMessage(err.message || "Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -41,8 +80,8 @@ const Register = ({ onLogin }) => {
         className="w-80 md:w-96 flex flex-col"
         noValidate
       >
-        <h2 className=" font-heading text-4xl font-medium text-[var(--text-main)]">
-          Sign <span className="text-[var(--accent-primary)]" >Up</span>
+        <h2 className="font-heading text-4xl font-medium text-[var(--text-main)]">
+          Sign <span className="text-[var(--accent-primary)]">Up</span>
         </h2>
 
         <p className="text-sm text-[var(--text-secondary)] mt-3">
@@ -57,6 +96,13 @@ const Register = ({ onLogin }) => {
           </p>
           <div className="flex-1 h-px bg-[var(--border-light)]" />
         </div>
+
+        {/* Show backend error */}
+        {errorMessage && (
+          <p className="text-xs text-[var(--error)] text-center mb-4">
+            {errorMessage}
+          </p>
+        )}
 
         <div className="flex items-center justify-center gap-2">
           {/* First Name */}
@@ -182,14 +228,16 @@ const Register = ({ onLogin }) => {
         {/* Submit */}
         <button
           type="submit"
-          className="
+          disabled={loading}
+          className={`
             mt-8 h-11 rounded-full
             bg-[var(--blue-button)]
             text-white font-medium
             transition
-          "
+            ${loading ? "opacity-60 cursor-not-allowed" : "hover:opacity-90"}
+          `}
         >
-          Create account
+          {loading ? "Creating..." : "Create account"}
         </button>
 
         {/* Login Link */}

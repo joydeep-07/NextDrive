@@ -3,14 +3,18 @@ import { useForm } from "react-hook-form";
 import { FaRegEye, FaRegEyeSlash } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { IoLockClosedOutline, IoMailOutline } from "react-icons/io5";
+import { AUTH_ENDPOINTS } from "../api/endpoint";
 
 const Login = ({ onRegister, onForgot }) => {
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm({
     mode: "onChange",
     defaultValues: {
@@ -20,11 +24,60 @@ const Login = ({ onRegister, onForgot }) => {
     },
   });
 
-  const onSubmit = (data) => {
-    console.log("Login submitted:", data);
-    // Here you would normally call your login API
-    // e.g. await signIn(data.email, data.password);
-    // if (data.rememberMe) { /* handle remember me logic */ }
+  const onSubmit = async (data) => {
+    setLoading(true);
+    setErrorMessage("");
+
+    const payload = {
+      email: data.email.trim(),
+      password: data.password,
+    };
+
+    try {
+      const response = await fetch(AUTH_ENDPOINTS.LOGIN, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        // Examples: "Invalid credentials", "User not found", etc.
+        throw new Error(result.message || "Login failed");
+      }
+
+      // ───────────────────────────────────────
+      // SUCCESS - store token & redirect / update app state
+      // ───────────────────────────────────────
+      console.log("Login successful:", result);
+
+      // Most common patterns (choose one):
+      // 1. JWT in localStorage (simple but less secure than httpOnly cookie)
+      localStorage.setItem("token", result.token);
+
+      // 2. Or httpOnly cookie (more secure) — backend must set it
+      // (no client code needed in this case)
+
+      // 3. Or context / redux / zustand → set user & token
+      // setUser(result.user);
+      // setIsAuthenticated(true);
+
+      reset(); // optional
+      setErrorMessage("");
+      alert("Logged in successfully!"); // ← replace with real navigation
+
+      // Example: redirect
+      // window.location.href = "/dashboard";
+      // or use react-router: navigate("/dashboard")
+    } catch (err) {
+      console.error("Login error:", err);
+      setErrorMessage(err.message || "Unable to sign in. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -35,10 +88,9 @@ const Login = ({ onRegister, onForgot }) => {
           className="w-80 md:w-96 flex flex-col"
           noValidate
         >
-          <h2 className=" font-heading text-4xl font-medium text-[var(--text-main)]">
+          <h2 className="font-heading text-4xl font-medium text-[var(--text-main)]">
             Sign <span className="text-[var(--accent-primary)]">In</span>
           </h2>
-
           <p className="text-sm text-[var(--text-secondary)] mt-3">
             Welcome back! Please sign in to continue
           </p>
@@ -66,6 +118,13 @@ const Login = ({ onRegister, onForgot }) => {
             </p>
             <div className="flex-1 h-px bg-[var(--border-light)]" />
           </div>
+
+          {/* Backend / network error message */}
+          {errorMessage && (
+            <p className="text-xs text-[var(--error)] text-center mb-4">
+              {errorMessage}
+            </p>
+          )}
 
           {/* Email */}
           <div
@@ -103,7 +162,6 @@ const Login = ({ onRegister, onForgot }) => {
           {/* Password */}
           <div className="flex items-center gap-2 h-12 pl-6 pr-4 rounded-full mt-6 border border-[var(--border-light)]">
             <IoLockClosedOutline className="text-[var(--text-muted)]" />
-
             <input
               type={showPassword ? "text" : "password"}
               placeholder="Password"
@@ -116,7 +174,6 @@ const Login = ({ onRegister, onForgot }) => {
                 },
               })}
             />
-
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
@@ -141,7 +198,7 @@ const Login = ({ onRegister, onForgot }) => {
               />
               Remember me
             </label>
-
+            {/* Uncomment when you implement forgot password */}
             {/* <button
               type="button"
               onClick={onForgot}
@@ -154,14 +211,16 @@ const Login = ({ onRegister, onForgot }) => {
           {/* Submit */}
           <button
             type="submit"
-            className="
+            disabled={loading}
+            className={`
                 mt-8 h-11 rounded-full
                 bg-[var(--blue-button)]
                 text-white font-medium
                 transition
-              "
+                ${loading ? "opacity-60 cursor-not-allowed" : "hover:opacity-90"}
+              `}
           >
-            Login
+            {loading ? "Signing in..." : "Login"}
           </button>
 
           {/* Signup */}
