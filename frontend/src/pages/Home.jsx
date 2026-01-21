@@ -1,14 +1,12 @@
-import React from 'react'
-import Hero from '../components/Hero'
-import { Banner } from '../components/Banner'
+import React from "react";
+import { useSelector } from "react-redux";
+import Hero from "../components/Hero";
+import Dashboard from "../ui/Dashboard";
 
 const Home = () => {
-  return (
-    <div>
-        {/* <Banner/> */}
-        <Hero/>
-    </div>
-  )
-}
+  const { isAuthenticated } = useSelector((state) => state.auth);
 
-export default Home
+  return <div>{isAuthenticated ? <Dashboard /> : <Hero />}</div>;
+};
+
+export default Home;

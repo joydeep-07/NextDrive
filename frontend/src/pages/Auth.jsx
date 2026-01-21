@@ -35,7 +35,7 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[var(--bg-main)]">
+    <div className=" pt-15 md:pt-0 pb-15 md:pb-0 md:min-h-screen flex items-center justify-center bg-[var(--bg-main)]">
       <div className="flex w-full max-w-6xl overflow-hidden px-4">
         {/* LEFT PANEL (completely unchanged) */}
         <div className="w-1/2 h-[70vh] hidden md:flex relative flex-col justify-start">
@@ -115,7 +115,7 @@ export default function Auth() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-                className="w-full flex justify-center" 
+                className="w-full flex justify-center"
               >
                 <Login
                   onRegister={() => switchForm("register")}
@@ -133,7 +133,7 @@ export default function Auth() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-                className="w-full flex justify-center" 
+                className="w-full flex justify-center"
               >
                 <Register onLogin={() => switchForm("login")} />
               </motion.div>
@@ -148,7 +148,7 @@ export default function Auth() {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-                className="w-full flex justify-center" 
+                className="w-full flex justify-center"
               >
                 <ForgotPasswod onBack={() => switchForm("login")} />
               </motion.div>

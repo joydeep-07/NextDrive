@@ -5,6 +5,7 @@ import { FcGoogle } from "react-icons/fc";
 import { IoLockClosedOutline, IoMailOutline } from "react-icons/io5";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../redux/slices/authSlice";
+import { useNavigate } from "react-router-dom";
 
 const Login = ({ onRegister, onForgot }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -37,10 +38,11 @@ const Login = ({ onRegister, onForgot }) => {
     );
   };
 
-  /* Optional: clear form on successful login */
+  const navigate = useNavigate();
   useEffect(() => {
     if (isAuthenticated) {
       reset();
+      navigate("/");
     }
   }, [isAuthenticated, reset]);
 
@@ -85,10 +87,11 @@ const Login = ({ onRegister, onForgot }) => {
           </div>
 
           {/* Backend / Auth Error */}
+
           {error && (
-            <p className="text-xs text-[var(--error)] text-center mb-4">
-              {error}
-            </p>
+            <div className="rounded-sm mb-4 py-3 border-l-[3px] border-[var(--error)]/90 bg-[var(--error)]/20 ">
+              <p className="text-xs text-[var(--error)] text-center">{error}</p>
+            </div>
           )}
 
           {/* Email */}

@@ -4,6 +4,7 @@ import { MdMenu } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logout } from "../redux/slices/authSlice";
+import LogoutButton from "../ui/LogoutButton";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -16,7 +17,7 @@ const Navbar = () => {
   const handleLogout = () => {
     dispatch(logout());
     setOpen(false);
-    navigate("/auth"); 
+    // navigate("/auth"); 
   };
 
   return (
@@ -90,17 +91,7 @@ const Navbar = () => {
                 >
                   Sign In
                 </Link>
-              ) : (
-                <button
-                  onClick={handleLogout}
-                  className="text-center px-5 py-2 rounded-full text-white transition active:scale-95"
-                  style={{
-                    backgroundColor: "var(--accent-primary)",
-                  }}
-                >
-                  Logout
-                </button>
-              )}
+              ) : <LogoutButton/> }
             </div>
           </div>
         )}
