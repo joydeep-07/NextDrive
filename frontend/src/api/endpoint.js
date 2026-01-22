@@ -16,8 +16,3 @@ export const FOLDER_ENDPOINTS = {
   ACCEPT_INVITE: `${BASE_URL}/folders/accept`,
 };
 
-// File endpoints
-export const FILE_ENDPOINTS = {
-  UPLOAD: `${BASE_URL}/files/upload`,
-  GET_BY_FOLDER: (folderId) => `${BASE_URL}/files/${folderId}`,
-};

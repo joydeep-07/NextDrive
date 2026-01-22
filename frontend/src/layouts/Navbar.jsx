@@ -41,12 +41,12 @@ const Navbar = () => {
         <div className="hidden md:flex w-2xl items-center justify-end gap-6">
           {isAuthenticated && (
             <div>
-              <div class="flex items-center border pl-4 gap-2 border-[var(--border-light)]/90 h-10 w-md rounded-full overflow-hidden max-w-md">
+              <div className="flex items-center border pl-4 gap-2 border-[var(--border-light)]/90 h-10 w-md rounded-full overflow-hidden max-w-md">
                 <FaSearch className="text-[var(--text-secondary)]/50 " />
                 <input
                   type="text"
                   placeholder="Search"
-                  class="w-full h-full outline-none text-[var(--text-main)] bg-transparent placeholder-[var(--text-muted)]/50 text-sm"
+                  className="w-full h-full outline-none text-[var(--text-main)] bg-transparent placeholder-[var(--text-muted)]/50 text-sm"
                 />
               </div>
             </div>

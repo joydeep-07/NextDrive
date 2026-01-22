@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // ← add this
+import { useNavigate } from "react-router-dom";
 import CreateFolderButton from "../components/CreateFolderButton";
 import { FOLDER_ENDPOINTS } from "../api/endpoint";
 
@@ -8,10 +8,15 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   useEffect(() => {
+    if (!token) {
+      navigate("/login");
+      return;
+    }
+
     const fetchFolders = async () => {
       try {
         setLoading(true);
@@ -21,63 +26,69 @@ const Dashboard = () => {
           method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         });
 
-        const data = await res.json();
-
         if (!res.ok) {
-          throw new Error(data.message || "Failed to fetch folders");
+          const errData = await res.json();
+          throw new Error(errData.message || `HTTP ${res.status}`);
         }
 
-        setFolders(data);
+        const data = await res.json();
+        setFolders(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error("Fetch folders error:", err);
+        console.error("Dashboard folders fetch failed:", err);
         setError(err.message);
       } finally {
         setLoading(false);
       }
     };
 
-    if (token) {
-      fetchFolders();
-    } else {
-      setLoading(false);
-    }
-  }, [token]);
-
-
-  const handleFolderClick = (folderId) => {
-    navigate(`/folder/${folderId}`);
-  };
+    fetchFolders();
+  }, [token, navigate]);
 
   return (
     <div className="p-6">
-      <CreateFolderButton
-        onCreated={(folder) => setFolders((prev) => [folder, ...prev])}
-      />
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Your Folders</h1>
+        <CreateFolderButton
+          onCreated={(newFolder) => setFolders((prev) => [newFolder, ...prev])}
+        />
+      </div>
 
-      {loading && <p className="mt-4 text-sm">Loading folders...</p>}
+      {loading && <p className="text-center py-10">Loading your folders...</p>}
 
-      {error && <p className="mt-4 text-red-500">{error}</p>}
-
-      {!loading && !error && folders.length === 0 && (
-        <p className="mt-4 text-sm text-gray-500">No folders created yet</p>
+      {error && (
+        <div className="bg-red-50 border border-red-200 text-red-700 p-4 rounded mb-6">
+          {error}
+        </div>
       )}
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+      {!loading && !error && folders.length === 0 && (
+        <p className="text-center py-10 text-gray-500">
+          You haven't created any folders yet
+        </p>
+      )}
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
         {folders.map((folder) => (
           <div
             key={folder._id}
-            onClick={() => handleFolderClick(folder._id)} 
-            className="
-              p-4 border border-[var(--border-light)]
-              rounded-lg cursor-pointer
-              hover:bg-[var(--bg-secondary)]
-              transition
-            "
+            onClick={() => navigate(`/folder/${folder._id}`)}
+            className={`
+              p-5 border rounded-xl cursor-pointer
+              hover:shadow-md hover:border-blue-400 transition-all
+              bg-white
+            `}
           >
-            📁 {folder.name}
+            <div className="text-4xl mb-3">📁</div>
+            <h3 className="font-semibold text-lg truncate">{folder.name}</h3>
+            {folder.description && (
+              <p className="text-sm text-gray-600 mt-1 line-clamp-2">
+                {folder.description}
+              </p>
+            )}
           </div>
         ))}
       </div>
