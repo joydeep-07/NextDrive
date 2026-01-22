@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import CreateFolderButton from "../components/CreateFolderButton";
+import { FOLDER_ENDPOINTS } from "../api/endpoint";
 
 const Dashboard = () => {
   const [folders, setFolders] = useState([]);
@@ -12,11 +13,11 @@ const Dashboard = () => {
     const fetchFolders = async () => {
       try {
         setLoading(true);
+        setError(null);
 
-        const res = await fetch("http://localhost:3000/api/folders", {
+        const res = await fetch(FOLDER_ENDPOINTS.GET_FOLDERS, {
           method: "GET",
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         });
@@ -29,7 +30,7 @@ const Dashboard = () => {
 
         setFolders(data);
       } catch (err) {
-        console.error(err);
+        console.error("Fetch folders error:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -53,7 +54,7 @@ const Dashboard = () => {
 
       {error && <p className="mt-4 text-red-500">{error}</p>}
 
-      {!loading && folders.length === 0 && (
+      {!loading && !error && folders.length === 0 && (
         <p className="mt-4 text-sm text-gray-500">No folders created yet</p>
       )}
 
@@ -61,7 +62,12 @@ const Dashboard = () => {
         {folders.map((folder) => (
           <div
             key={folder._id}
-            className="p-4 border border-[var(--border-light)] rounded-lg cursor-pointer hover:bg-[var(--bg-secondary)] transition"
+            className="
+              p-4 border border-[var(--border-light)]
+              rounded-lg cursor-pointer
+              hover:bg-[var(--bg-secondary)]
+              transition
+            "
           >
             📁 {folder.name}
           </div>
