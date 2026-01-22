@@ -91,12 +91,12 @@ const UserDetail = () => {
               ease: [0.16, 1, 0.3, 1],
             }}
             className={`
-              absolute right-0 mt-3 w-72 
+              absolute -left-65 mt-3 w-76 
               bg-[var(--bg-secondary)]/20 
               border border-[var(--border-light)]/50 
               rounded-xl 
               overflow-hidden z-50
-              backdrop-blur-sm
+              backdrop-blur-3xl
             `}
           >
             {/* Header / User info */}
@@ -137,10 +137,10 @@ const UserDetail = () => {
                     hover:text-[var(--text-main)] 
                     transition-colors
                   `}
-                  aria-label={`Switch to ${isDark ? "light" : "dark"} mode`}
+                  aria-label={`Switch to ${isDark ? " light" : "dark"} mode`}
                 >
                   <span className="font-medium">
-                    {isDark ? "Light Mode" : "Dark Mode"}
+                    {isDark ? " Toggle to Light Mode" : " Enable Dark Mode"}
                   </span>
 
                   <div
