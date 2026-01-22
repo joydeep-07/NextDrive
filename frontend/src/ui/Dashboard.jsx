@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ← add this
 import CreateFolderButton from "../components/CreateFolderButton";
 import { FOLDER_ENDPOINTS } from "../api/endpoint";
 
@@ -7,6 +8,7 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const navigate = useNavigate(); 
   const token = localStorage.getItem("token");
 
   useEffect(() => {
@@ -44,6 +46,11 @@ const Dashboard = () => {
     }
   }, [token]);
 
+
+  const handleFolderClick = (folderId) => {
+    navigate(`/folder/${folderId}`);
+  };
+
   return (
     <div className="p-6">
       <CreateFolderButton
@@ -62,6 +69,7 @@ const Dashboard = () => {
         {folders.map((folder) => (
           <div
             key={folder._id}
+            onClick={() => handleFolderClick(folder._id)} 
             className="
               p-4 border border-[var(--border-light)]
               rounded-lg cursor-pointer

@@ -6,6 +6,7 @@ import { loadUser } from "./redux/slices/authSlice";
 import Root from "./layouts/Root";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
+import FolderPage from "./pages/FolderPage";
 
 function App() {
   const theme = useSelector((state) => state.theme.mode);
@@ -31,6 +32,8 @@ function App() {
       <Route element={<Root />}>
         <Route path="/" element={<Home />} />
         <Route path="/auth" element={<Auth />} />
+
+        <Route path="/folder/:id" element={<FolderPage />} />
       </Route>
     </Routes>
   );
