@@ -117,3 +117,21 @@ exports.getFolderById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+/**
+ * Get All Folders for Logged-in User
+ * (Owner OR Collaborator)
+ */
+exports.getMyFolders = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const folders = await Folder.find({
+      $or: [{ owner: userId }, { collaborators: userId }],
+    }).sort({ createdAt: -1 });
+
+    res.json(folders);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
