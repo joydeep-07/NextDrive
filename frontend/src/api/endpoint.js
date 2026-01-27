@@ -10,9 +10,13 @@ export const AUTH_ENDPOINTS = {
 // Folder endpoints
 export const FOLDER_ENDPOINTS = {
   CREATE: `${BASE_URL}/folders`,
-  GET_FOLDERS: `${BASE_URL}/folders`, // ✅ correct
+  GET_FOLDERS: `${BASE_URL}/folders`, // get my folders
   GET_BY_ID: (folderId) => `${BASE_URL}/folders/${folderId}`,
+
+  // Collaboration
   SEND_INVITE: `${BASE_URL}/folders/invite`,
   ACCEPT_INVITE: `${BASE_URL}/folders/accept`,
-};
 
+  // 🗑 Delete folder (OWNER ONLY)
+  DELETE_FOLDER: `${BASE_URL}/folders`,
+};

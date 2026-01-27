@@ -9,7 +9,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173", // change if needed
+    origin: "http://localhost:5173",
     credentials: true,
   }),
 );
@@ -17,10 +17,9 @@ app.use(
 app.use(express.json());
 connectDB();
 
-
-app.use("/api/users", require("./routes/User.routes"));
-app.use("/api/folders", require("./routes/Folder.route"));
-
+// Routes
+app.use("/api/users", require("./routes/user.routes"));
+app.use("/api/folders", require("./routes/folder.route"));
 
 app.get("/", (req, res) => {
   res.status(200).json({
@@ -29,6 +28,7 @@ app.get("/", (req, res) => {
   });
 });
 
+// Global error handler
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 import CreateFolderButton from "../components/CreateFolderButton";
 import { FOLDER_ENDPOINTS } from "../api/endpoint";
 
@@ -10,6 +11,17 @@ const Dashboard = () => {
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
+
+  // 🔐 Decode logged-in user ID
+  let loggedInUserId = null;
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      loggedInUserId = decoded.id;
+    } catch (err) {
+      console.error("Invalid token:", err);
+    }
+  }
 
   useEffect(() => {
     if (!token) {
@@ -38,7 +50,6 @@ const Dashboard = () => {
         const data = await res.json();
         setFolders(Array.isArray(data) ? data : []);
       } catch (err) {
-        console.error("Dashboard folders fetch failed:", err);
         setError(err.message);
       } finally {
         setLoading(false);
@@ -47,6 +58,35 @@ const Dashboard = () => {
 
     fetchFolders();
   }, [token, navigate]);
+
+  // 🗑 Delete folder (OWNER ONLY)
+  const handleDeleteFolder = async (e, folderId) => {
+    e.stopPropagation(); // prevent navigation
+
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this folder?",
+    );
+    if (!confirmed) return;
+
+    try {
+      const res = await fetch(`${FOLDER_ENDPOINTS.DELETE_FOLDER}/${folderId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || "Delete failed");
+      }
+
+      // Remove from UI
+      setFolders((prev) => prev.filter((f) => f._id !== folderId));
+    } catch (err) {
+      alert(err.message);
+    }
+  };
 
   return (
     <div
@@ -60,10 +100,10 @@ const Dashboard = () => {
             style={{ color: "var(--text-main)" }}
           >
             Your Folders
-            {/* Folder count */}
             {folders.length > 0 && (
-              <p className=" text-sm">
-                Showing {folders.length} folder{folders.length !== 1 ? "s" : ""}
+              <p className="text-sm">
+                Showing {folders.length} folder
+                {folders.length !== 1 ? "s" : ""}
               </p>
             )}
           </h1>
@@ -75,81 +115,43 @@ const Dashboard = () => {
           />
         </div>
 
-        {loading && (
-          <div className="text-center py-16">
-            <div
-              className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 mb-3"
-              style={{ borderColor: "var(--accent-primary)" }}
-            ></div>
-            <p className="font-body" style={{ color: "var(--text-muted)" }}>
-              Loading your folders...
-            </p>
-          </div>
-        )}
-
-        {error && (
-          <div
-            className="mb-8 p-4 rounded-lg border"
-            style={{
-              backgroundColor: "var(--bg-secondary)",
-              borderColor: "var(--error)",
-              color: "var(--error)",
-            }}
-          >
-            <div className="flex items-center gap-2">
-              <span className="text-lg">⚠️</span>
-              <p className="font-body">{error}</p>
-            </div>
-          </div>
-        )}
-
-        {!loading && !error && folders.length === 0 && (
-          <div
-            className="text-center py-16 border-2 border-dashed rounded-2xl"
-            style={{
-              borderColor: "var(--border-light)",
-              backgroundColor: "var(--bg-tertiary)",
-            }}
-          >
-            <div
-              className="text-5xl mb-4"
-              style={{ color: "var(--accent-soft)" }}
-            >
-              📂
-            </div>
-            <h3
-              className="text-xl font-heading mb-2"
-              style={{ color: "var(--text-main)" }}
-            >
-              No folders yet
-            </h3>
-            <p
-              className="font-body mb-4"
-              style={{ color: "var(--text-muted)" }}
-            >
-              Create your first folder to get started
-            </p>
-            <CreateFolderButton
-              onCreated={(newFolder) =>
-                setFolders((prev) => [newFolder, ...prev])
-              }
-              variant="empty-state"
-            />
-          </div>
-        )}
-
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
-          {folders.map((folder) => (
-            <div
-              key={folder._id}
-              onClick={() => navigate(`/folder/${folder._id}`)}
-              className="group relative p-5 rounded-sm bg-[var(--bg-secondary)]/30 border border-[var(--border-light)]/50 hover:border-[var(--border-light)] flex items-center cursor-pointer transition-all duration-300"
-            >
-              {/* Folder icon with accent color */}
-              {/* <div className="text-3xl mb-4 transition-transform">📁</div> */}
+          {folders.map((folder) => {
+            const isOwner = folder.owner === loggedInUserId;
 
-              {/* Folder name */}
-              <div>
+            return (
+              <div
+                key={folder._id}
+                onClick={() => navigate(`/folder/${folder._id}`)}
+                className="group relative p-5 rounded-sm bg-[var(--bg-secondary)]/30 border border-[var(--border-light)]/50 hover:border-[var(--border-light)] cursor-pointer transition-all duration-300"
+              >
+                {/* 🏷 Admin Badge */}
+                {isOwner && (
+                  <span
+                    className="absolute top-3 right-3 text-xs px-2 py-[2px] rounded-full font-semibold"
+                    style={{
+                      backgroundColor: "var(--accent-primary)",
+                      color: "var(--bg-main)",
+                    }}
+                  >
+                    Admin
+                  </span>
+                )}
+
+                {/* 🗑 Delete button (owner only) */}
+                {isOwner && (
+                  <button
+                    onClick={(e) => handleDeleteFolder(e, folder._id)}
+                    className="absolute bottom-3 right-3 text-xs px-2 py-1 rounded-md border hover:opacity-80"
+                    style={{
+                      borderColor: "var(--error)",
+                      color: "var(--error)",
+                    }}
+                  >
+                    Delete
+                  </button>
+                )}
+
                 <h3
                   className="font-medium text-lg truncate"
                   style={{ color: "var(--text-main)" }}
@@ -157,18 +159,14 @@ const Dashboard = () => {
                   {folder.name}
                 </h3>
 
-                {/* Folder description */}
                 {folder.description && (
-                  <p
-                    className="font-body text-[var(--text-secondary)]/70 font-light text-sm mb-3 line-clamp-2"
-                    style={{ color: "" }}
-                  >
+                  <p className="text-sm font-light line-clamp-2 text-[var(--text-secondary)]/70">
                     {folder.description}
                   </p>
                 )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

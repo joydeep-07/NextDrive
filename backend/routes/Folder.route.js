@@ -7,6 +7,7 @@ const {
   acceptCollaborationRequest,
   getFolderById,
   getMyFolders,
+  deleteFolder,
 } = require("../controllers/Folder.controller");
 
 const auth = require("../middlewares/auth.middleware"); // JWT middleware
@@ -16,5 +17,8 @@ router.get("/", auth, getMyFolders);
 router.post("/invite", auth, sendCollaborationRequest);
 router.post("/accept", auth, acceptCollaborationRequest);
 router.get("/:id", auth, getFolderById);
+router.delete("/:id", auth, deleteFolder);
+
+
 
 module.exports = router;

@@ -135,3 +135,28 @@ exports.getMyFolders = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+/**
+ * Delete Folder (Owner only)
+ */
+exports.deleteFolder = async (req, res) => {
+  try {
+    const folder = await Folder.findById(req.params.id);
+
+    if (!folder) {
+      return res.status(404).json({ message: "Folder not found" });
+    }
+
+    // 🔒 Only owner can delete
+    if (folder.owner.toString() !== req.user.id) {
+      return res.status(403).json({ message: "Not authorized" });
+    }
+
+    await folder.deleteOne();
+
+    res.json({ message: "Folder deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
