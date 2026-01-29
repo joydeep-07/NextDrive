@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { USER_ENDPOINTS } from "../api/endpoint";
+import { FaSearch } from "react-icons/fa";
 
 const CollaborationRequest = () => {
   const [open, setOpen] = useState(false);
@@ -57,31 +58,36 @@ const CollaborationRequest = () => {
             {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-light)]">
               <div>
-                <h3 className="text-xl font-medium text-[var(--text-main)] font-heading flex items-center gap-3">
-                  
-                  Invite Collaborators
+                <h3 className="text-xl font-medium text-[var(--text-main)] font-heading flex justify-start items-center gap-2">
+                  Invite
+                  <span className="text-[var(--accent-primary)] ">
+                    Collaborators
+                  </span>
                 </h3>
                 <p className="text-xs text-[var(--text-secondary)]/50">
                   Collaborators can access and upload files in the folder.
                 </p>
               </div>
-              <button
+              {/* <button
                 onClick={() => setOpen(false)}
                 className="text-[var(--text-muted)] hover:text-[var(--text-secondary)] text-xl font-medium transition-colors"
               >
                 ✕
-              </button>
+              </button> */}
             </div>
 
             {/* Search */}
             <div className="p-6 pb-4">
-              <input
-                type="text"
-                placeholder="Search by name or email..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full px-4 py-3 rounded-full border border-[var(--border-light)]  bg-[var(--bg-secondary)]/20 text-[var(--text-main)]  placeholder-[var(--text-muted)] focus:outline-none  focus:ring-2 focus:ring-[var(--accent-primary)/30] focus:border-[var(--accent-primary)] transition-all duration-200"
-              />
+              <div className="w-full flex justify-center items-center px-4 rounded-full border border-[var(--border-light)]  bg-[var(--bg-secondary)]/20 text-[var(--text-main)]  placeholder-[var(--text-muted)] focus:outline-none  focus:ring-2 focus:ring-[var(--accent-primary)/30] focus:border-[var(--accent-primary)] transition-all duration-200">
+                <FaSearch className="text-[var(--text-secondary)]/70 " />
+                <input
+                  type="text"
+                  placeholder="Search by name or email..."
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  className="w-full h-full p-3 outline-none bg-transparent ml-3"
+                />
+              </div>
             </div>
 
             {/* User list area */}
@@ -103,7 +109,7 @@ const CollaborationRequest = () => {
                       key={user._id}
                       className="group flex items-center justify-between p-4 rounded-lg 
                                  border border-[var(--border-light)] bg-[var(--bg-tertiary)/40] 
-                                 hover:bg-[var(--bg-tertiary)] hover:shadow-[var(--shadow-sm)] 
+                                 hover:bg-[var(--bg-secondary)]/30
                                  hover:scale-[1.01] transition-all duration-200"
                     >
                       <div className="flex items-center gap-3 min-w-0">
@@ -121,7 +127,7 @@ const CollaborationRequest = () => {
                       </div>
 
                       <button
-                        className="px-5 py-2 text-sm font-medium rounded-lg 
+                        className="px-5 py-2 text-sm font-medium rounded-sm
                                    bg-[var(--blue-button)] text-white 
                                    hover:brightness-110 active:scale-95 transition-all"
                       >
