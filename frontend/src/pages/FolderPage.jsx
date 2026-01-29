@@ -12,6 +12,9 @@ const FolderPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const [hasSelectedImages, setHasSelectedImages] = useState(false);
+
+
   useEffect(() => {
     const fetchFolder = async () => {
       try {
@@ -78,18 +81,21 @@ const FolderPage = () => {
         {/* Action Panel */}
         <div className="bg-[var(--bg-secondary)]/50 rounded-xl shadow-sm border border-[var(--border-light)]/50 p-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
-            <div>
-              <h2 className="text-lg font-semibold text-[var(--text-main)]">
-                Folder Actions
-              </h2>
-              <p className="text-sm mt-1 text-[var(--text-muted)]">
-                Upload files or invite collaborators
-              </p>
-            </div>
+            {!hasSelectedImages && (
+              <div>
+                <h2 className="text-lg font-semibold text-[var(--text-main)]">
+                  Folder Actions
+                </h2>
+                <p className="text-sm mt-1 text-[var(--text-muted)]">
+                  Upload files or invite collaborators
+                </p>
+              </div>
+            )}
 
             <div className="flex items-center justify-center gap-4">
-              <UploadFile />
-              <CollaborationRequest />
+              <UploadFile onPreviewChange={setHasSelectedImages} />
+
+              {!hasSelectedImages && <CollaborationRequest />}
             </div>
           </div>
         </div>
