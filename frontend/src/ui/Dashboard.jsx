@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import CreateFolderButton from "../components/CreateFolderButton";
 import { FOLDER_ENDPOINTS } from "../api/endpoint";
+import { FaEllo } from "react-icons/fa";
+import { IoEllipsisHorizontal, IoEllipsisVertical } from "react-icons/io5";
 
 const Dashboard = () => {
   const [folders, setFolders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeMenu, setActiveMenu] = useState(null); // Track which folder's menu is open
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -59,9 +62,28 @@ const Dashboard = () => {
     fetchFolders();
   }, [token, navigate]);
 
+  // Toggle menu visibility for a specific folder
+  const toggleMenu = (folderId, e) => {
+    e.stopPropagation();
+    setActiveMenu(activeMenu === folderId ? null : folderId);
+  };
+
+  // Close menu when clicking elsewhere
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setActiveMenu(null);
+    };
+
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
   // 🗑 Delete folder (OWNER ONLY)
   const handleDeleteFolder = async (e, folderId) => {
-    e.stopPropagation(); // prevent navigation
+    e.stopPropagation();
+    setActiveMenu(null); // Close menu
 
     const confirmed = window.confirm(
       "Are you sure you want to delete this folder?",
@@ -95,18 +117,22 @@ const Dashboard = () => {
     >
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
-          <h1
-            className="text-3xl font-bold"
-            style={{ color: "var(--text-main)" }}
-          >
-            Your Folders
+          <div>
+            <h1
+              className="text-3xl font-bold mb-2"
+              style={{ color: "var(--text-main)" }}
+            >
+              Your Folders
+            </h1>
             {folders.length > 0 && (
-              <p className="text-sm">
-                Showing {folders.length} folder
-                {folders.length !== 1 ? "s" : ""}
+              <p
+                className="text-sm opacity-70"
+                style={{ color: "var(--text-secondary)" }}
+              >
+                Showing {folders.length} folder{folders.length !== 1 ? "s" : ""}
               </p>
             )}
-          </h1>
+          </div>
 
           <CreateFolderButton
             onCreated={(newFolder) =>
@@ -115,55 +141,92 @@ const Dashboard = () => {
           />
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {folders.map((folder) => {
             const isOwner = folder.owner === loggedInUserId;
 
             return (
               <div
                 key={folder._id}
+                className="group relative bg-[var(--bg-secondary)]/30 rounded-lg p-4 transition-all duration-300 cursor-pointer"
                 onClick={() => navigate(`/folder/${folder._id}`)}
-                className="group relative p-5 rounded-sm bg-[var(--bg-secondary)]/30 border border-[var(--border-light)]/50 hover:border-[var(--border-light)] cursor-pointer transition-all duration-300"
               >
                 {/* 🏷 Admin Badge */}
                 {isOwner && (
                   <span
-                    className="absolute top-3 right-3 text-xs px-2 py-[2px] rounded-full font-semibold"
+                    className="absolute top-3 left-3 text-xs px-2 py-1 rounded-full font-semibold"
                     style={{
                       backgroundColor: "var(--accent-primary)",
-                      color: "var(--bg-main)",
+                      color: "white",
                     }}
                   >
                     Admin
                   </span>
                 )}
 
-                {/* 🗑 Delete button (owner only) */}
+                {/* 📂 Three-dot Menu */}
                 {isOwner && (
-                  <button
-                    onClick={(e) => handleDeleteFolder(e, folder._id)}
-                    className="absolute bottom-3 right-3 text-xs px-2 py-1 rounded-md border hover:opacity-80"
-                    style={{
-                      borderColor: "var(--error)",
-                      color: "var(--error)",
-                    }}
-                  >
-                    Delete
-                  </button>
+                  <div className="absolute top-3 right-3">
+                    <button
+                      onClick={(e) => toggleMenu(folder._id, e)}
+                      className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
+                      aria-label="Folder options"
+                    >
+                      <IoEllipsisVertical/>
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    {activeMenu === folder._id && (
+                      <div
+                        className="absolute right-0 mt-1 w-32 rounded-lg shadow-lg py-1 z-10"
+                        style={{
+                          backgroundColor: "var(--bg-secondary)",
+                          border: "1px solid var(--border-color)",
+                        }}
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <button
+                          onClick={(e) => handleDeleteFolder(e, folder._id)}
+                          className="w-full text-left px-4 py-2 text-sm hover:bg-white/10 transition-colors flex items-center gap-2"
+                          style={{ color: "var(--error)" }}
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            />
+                          </svg>
+                          Delete
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 )}
 
+                {/* 📂 Folder Icon */}
+                <div className="flex justify-center mt-8 mb-4">
+                  <img
+                    src="/folder.svg"
+                    alt="Folder Icon"
+                    className="w-30 h-30 transition-transform group-hover:scale-105"
+                  />
+                </div>
+
+                {/* Folder Name */}
                 <h3
-                  className="font-medium text-lg truncate"
+                  className="text-center font-medium truncate px-2"
                   style={{ color: "var(--text-main)" }}
+                  title={folder.name}
                 >
                   {folder.name}
                 </h3>
-
-                {folder.description && (
-                  <p className="text-sm font-light line-clamp-2 text-[var(--text-secondary)]/70">
-                    {folder.description}
-                  </p>
-                )}
               </div>
             );
           })}
