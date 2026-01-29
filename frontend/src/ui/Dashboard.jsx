@@ -2,16 +2,21 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import CreateFolderButton from "../components/CreateFolderButton";
+import DeleteModal from "../components/DeleteModal";
 import { FOLDER_ENDPOINTS } from "../api/endpoint";
-import { FaDownload, FaEllo, FaTrash } from "react-icons/fa";
-import { IoEllipsisHorizontal, IoEllipsisVertical } from "react-icons/io5";
-import { FiDelete } from "react-icons/fi";
+import { FaDownload, FaTrash } from "react-icons/fa";
+import { IoEllipsisVertical } from "react-icons/io5";
+import { MdAdminPanelSettings } from "react-icons/md";
 
 const Dashboard = () => {
   const [folders, setFolders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeMenu, setActiveMenu] = useState(null);
+
+  // 🔴 Delete modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [selectedFolderId, setSelectedFolderId] = useState(null);
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
@@ -39,16 +44,14 @@ const Dashboard = () => {
         setError(null);
 
         const res = await fetch(FOLDER_ENDPOINTS.GET_FOLDERS, {
-          method: "GET",
           headers: {
             Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
           },
         });
 
         if (!res.ok) {
           const errData = await res.json();
-          throw new Error(errData.message || `HTTP ${res.status}`);
+          throw new Error(errData.message || "Failed to fetch folders");
         }
 
         const data = await res.json();
@@ -63,51 +66,51 @@ const Dashboard = () => {
     fetchFolders();
   }, [token, navigate]);
 
-  // Toggle menu visibility for a specific folder
+  // Toggle menu
   const toggleMenu = (folderId, e) => {
     e.stopPropagation();
     setActiveMenu(activeMenu === folderId ? null : folderId);
   };
 
-  // Close menu when clicking elsewhere
+  // Close menu on outside click
   useEffect(() => {
-    const handleClickOutside = () => {
-      setActiveMenu(null);
-    };
-
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
+    const closeMenu = () => setActiveMenu(null);
+    document.addEventListener("click", closeMenu);
+    return () => document.removeEventListener("click", closeMenu);
   }, []);
 
-  // 🗑 Delete folder (OWNER ONLY)
-  const handleDeleteFolder = async (e, folderId) => {
+  // 🗑 Open delete modal
+  const openDeleteModal = (e, folderId) => {
     e.stopPropagation();
-    setActiveMenu(null); // Close menu
+    setActiveMenu(null);
+    setSelectedFolderId(folderId);
+    setShowDeleteModal(true);
+  };
 
-    const confirmed = window.confirm(
-      "Are you sure you want to delete this folder?",
-    );
-    if (!confirmed) return;
-
+  // 🗑 Confirm delete
+  const confirmDeleteFolder = async () => {
     try {
-      const res = await fetch(`${FOLDER_ENDPOINTS.DELETE_FOLDER}/${folderId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await fetch(
+        `${FOLDER_ENDPOINTS.DELETE_FOLDER}/${selectedFolderId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
 
       if (!res.ok) {
         const data = await res.json();
         throw new Error(data.message || "Delete failed");
       }
 
-      // Remove from UI
-      setFolders((prev) => prev.filter((f) => f._id !== folderId));
+      setFolders((prev) => prev.filter((f) => f._id !== selectedFolderId));
     } catch (err) {
       alert(err.message);
+    } finally {
+      setShowDeleteModal(false);
+      setSelectedFolderId(null);
     }
   };
 
@@ -130,7 +133,8 @@ const Dashboard = () => {
                 className="text-sm opacity-70"
                 style={{ color: "var(--text-secondary)" }}
               >
-                Showing {folders.length} folder{folders.length !== 1 ? "s" : ""}
+                Showing {folders.length} folder
+                {folders.length !== 1 ? "s" : ""}
               </p>
             )}
           </div>
@@ -152,31 +156,26 @@ const Dashboard = () => {
                 className="group relative bg-[var(--bg-secondary)]/30 rounded-lg p-4 transition-all duration-300 cursor-pointer"
                 onClick={() => navigate(`/folder/${folder._id}`)}
               >
-                {/* 🏷 Admin Badge */}
+                {/* Admin Badge */}
                 {isOwner && (
                   <span
-                    className="absolute top-3 left-3 text-xs px-2 py-1 rounded-full font-semibold"
-                    style={{
-                      backgroundColor: "var(--accent-primary)",
-                      color: "white",
-                    }}
+                    className="absolute top-3 left-3 text-xs p-1 bg-[var(--accent-primary)]/50 rounded-full font-semibold"
+                  
                   >
-                    Admin
+                    <MdAdminPanelSettings className="text-xl text-white" />
                   </span>
                 )}
 
-                {/* 📂 Three-dot Menu */}
+                {/* Menu */}
                 {isOwner && (
                   <div className="absolute top-3 right-3">
                     <button
                       onClick={(e) => toggleMenu(folder._id, e)}
-                      className="p-1.5 rounded-full hover:bg-white/10 transition-colors"
-                      aria-label="Folder options"
+                      className="p-1.5 rounded-full hover:bg-white/10"
                     >
                       <IoEllipsisVertical />
                     </button>
 
-                    {/* Dropdown Menu */}
                     {activeMenu === folder._id && (
                       <div
                         className="absolute right-0 mt-1 w-40 rounded-lg shadow-lg py-1 z-10"
@@ -187,23 +186,24 @@ const Dashboard = () => {
                         onClick={(e) => e.stopPropagation()}
                       >
                         <button
-                          onClick={(e) => handleDeleteFolder(e, folder._id)}
-                          className="w-full text-left px-4 py-2 text-sm hover:bg-white/10 transition-colors flex items-center gap-2"
+                          onClick={(e) => openDeleteModal(e, folder._id)}
+                          className="w-full text-left px-4 py-2 text-sm hover:bg-white/10 flex items-center gap-2"
                           style={{ color: "var(--error)" }}
                         >
                           <FaTrash />
                           Delete
                         </button>
 
-                        <button className="w-full text-left px-4 py-2 text-sm hover:bg-white/10 transition-colors flex items-center gap-2"> 
-                        <FaDownload/>
-                         Download Zip</button>
+                        <button className="w-full text-left px-4 py-2 text-sm hover:bg-white/10 flex items-center gap-2">
+                          <FaDownload />
+                          Download Zip
+                        </button>
                       </div>
                     )}
                   </div>
                 )}
 
-                {/* 📂 Folder Icon */}
+                {/* Folder Icon */}
                 <div className="flex justify-center mt-8 mb-4">
                   <img
                     src="/folder.svg"
@@ -216,7 +216,6 @@ const Dashboard = () => {
                 <h3
                   className="text-center font-medium truncate px-2"
                   style={{ color: "var(--text-main)" }}
-                  title={folder.name}
                 >
                   {folder.name}
                 </h3>
@@ -225,6 +224,21 @@ const Dashboard = () => {
           })}
         </div>
       </div>
+
+      {/* 🔴 Delete Modal */}
+      {showDeleteModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm"
+          onClick={() => setShowDeleteModal(false)}
+        >
+          <div onClick={(e) => e.stopPropagation()}>
+            <DeleteModal
+              onCancel={() => setShowDeleteModal(false)}
+              onConfirm={confirmDeleteFolder}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
