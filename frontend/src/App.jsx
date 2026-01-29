@@ -33,7 +33,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/auth" element={<Auth />} />
 
-        <Route path="/folder/:id" element={<FolderPage />} />
+        <Route path="/folder/:folderId" element={<FolderPage />} />
       </Route>
     </Routes>
   );

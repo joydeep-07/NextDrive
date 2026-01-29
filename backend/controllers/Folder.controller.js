@@ -105,8 +105,9 @@ exports.getFolderById = async (req, res) => {
     const userId = req.user.id;
 
     const hasAccess =
-      folder.owner.toString() === userId ||
-      folder.collaborators.some((id) => id.toString() === userId);
+      folder.owner._id.toString() === userId ||
+      folder.collaborators.some((collab) => collab._id.toString() === userId);
+
 
     if (!hasAccess) {
       return res.status(403).json({ message: "Access denied" });
