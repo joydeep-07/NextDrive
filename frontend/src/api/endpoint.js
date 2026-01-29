@@ -7,6 +7,11 @@ export const AUTH_ENDPOINTS = {
   LOGIN: `${BASE_URL}/users/login`,
 };
 
+// 👤 User endpoints
+export const USER_ENDPOINTS = {
+  GET_ALL: `${BASE_URL}/users/all`, // 🔐 protected
+};
+
 // Folder endpoints
 export const FOLDER_ENDPOINTS = {
   CREATE: `${BASE_URL}/folders`,
