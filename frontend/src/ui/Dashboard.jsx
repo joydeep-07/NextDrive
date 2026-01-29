@@ -7,6 +7,7 @@ import { FOLDER_ENDPOINTS } from "../api/endpoint";
 import { FaDownload, FaTrash } from "react-icons/fa";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { MdAdminPanelSettings } from "react-icons/md";
+import Storage from "./Storage";
 
 const Dashboard = () => {
   const [folders, setFolders] = useState([]);
@@ -122,12 +123,7 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1
-              className="text-3xl font-bold mb-2"
-              style={{ color: "var(--text-main)" }}
-            >
-              Your Folders
-            </h1>
+           <Storage/>
             {folders.length > 0 && (
               <p
                 className="text-sm opacity-70"
