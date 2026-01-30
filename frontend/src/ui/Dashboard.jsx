@@ -92,7 +92,7 @@ const Dashboard = () => {
   const confirmDeleteFolder = async () => {
     try {
       const res = await fetch(
-        `${FOLDER_ENDPOINTS.DELETE_FOLDER}/${selectedFolderId}`,
+        FOLDER_ENDPOINTS.DELETE_FOLDER(selectedFolderId),
         {
           method: "DELETE",
           headers: {
@@ -107,11 +107,11 @@ const Dashboard = () => {
       }
 
       setFolders((prev) => prev.filter((f) => f._id !== selectedFolderId));
-    } catch (err) {
-      alert(err.message);
-    } finally {
+
       setShowDeleteModal(false);
       setSelectedFolderId(null);
+    } catch (err) {
+      alert(err.message);
     }
   };
 
@@ -123,7 +123,7 @@ const Dashboard = () => {
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
-           <Storage/>
+            <Storage />
             {folders.length > 0 && (
               <p
                 className="text-sm opacity-70"
@@ -144,7 +144,13 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {folders.map((folder) => {
-            const isOwner = folder.owner === loggedInUserId;
+            // ✅ FIXED OWNER CHECK
+            const ownerId =
+              typeof folder.owner === "string"
+                ? folder.owner
+                : folder.owner?._id;
+
+            const isOwner = ownerId === loggedInUserId;
 
             return (
               <div
@@ -154,10 +160,7 @@ const Dashboard = () => {
               >
                 {/* Admin Badge */}
                 {isOwner && (
-                  <span
-                    className="absolute top-3 left-3 text-xs p-1 bg-[var(--accent-primary)]/50 rounded-full font-semibold"
-                  
-                  >
+                  <span className="absolute top-3 left-3 text-xs p-1 bg-[var(--accent-primary)]/50 rounded-full font-semibold">
                     <MdAdminPanelSettings className="text-xl text-white" />
                   </span>
                 )}
