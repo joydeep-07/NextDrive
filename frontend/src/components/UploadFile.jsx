@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { FiUpload, FiX, FiImage } from "react-icons/fi";
 import axios from "axios";
+import { FILE_ENDPOINTS } from "../api/endpoint"; 
 
 const UploadFile = ({ onPreviewChange, folderId = null }) => {
   const fileInputRef = useRef(null);
@@ -85,7 +86,7 @@ const UploadFile = ({ onPreviewChange, folderId = null }) => {
     }
 
     try {
-      await axios.post("http://localhost:3000/api/files/upload", formData, {
+      await axios.post(FILE_ENDPOINTS.UPLOAD, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
