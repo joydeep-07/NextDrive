@@ -7,6 +7,7 @@ import { logout } from "../redux/slices/authSlice";
 import LogoutButton from "../ui/LogoutButton";
 import { FaSearch } from "react-icons/fa";
 import UserDetail from "../ui/UserDetail";
+import AcceptRequest from "../components/AcceptRequest";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
@@ -51,6 +52,8 @@ const Navbar = () => {
               </div>
             </div>
           )}
+
+          {isAuthenticated && <AcceptRequest/>}
 
           {isAuthenticated && (
             <div>
