@@ -1,7 +1,8 @@
 import React, { useRef, useState, useEffect } from "react";
-import { FiUpload, FiX, FiImage, FiTrash2 } from "react-icons/fi";
+import { FiUpload, FiX, FiImage } from "react-icons/fi";
+import axios from "axios";
 
-const UploadFile = ({ onPreviewChange }) => {
+const UploadFile = ({ onPreviewChange, folderId = null }) => {
   const fileInputRef = useRef(null);
 
   // Store files + previews together to avoid index bugs
@@ -25,7 +26,7 @@ const UploadFile = ({ onPreviewChange }) => {
     return () => {
       items.forEach((item) => URL.revokeObjectURL(item.url));
     };
-  }, []);
+  }, [items]);
 
   /* ------------------------------
      Handlers
@@ -64,30 +65,43 @@ const UploadFile = ({ onPreviewChange }) => {
     setActivePreviewIndex(null);
   };
 
-  const simulateUpload = () => {
+  /* ------------------------------
+     REAL Upload (Multer + GridFS)
+  ------------------------------ */
+  const uploadFiles = async () => {
     if (!items.length) return;
 
     setIsUploading(true);
     setUploadProgress(0);
 
-    const interval = setInterval(() => {
-      setUploadProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
+    const formData = new FormData();
 
-          setTimeout(() => {
-            console.log(
-              "Uploaded files:",
-              items.map((i) => i.file),
-            );
-            handleCancel();
-          }, 600);
+    items.forEach((item) => {
+      formData.append("files", item.file);
+    });
 
-          return 100;
-        }
-        return prev + 10;
+    if (folderId) {
+      formData.append("folderId", folderId);
+    }
+
+    try {
+      await axios.post("http://localhost:3000/api/files/upload", formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        onUploadProgress: (progressEvent) => {
+          const percent = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total,
+          );
+          setUploadProgress(percent);
+        },
       });
-    }, 100);
+
+      handleCancel();
+    } catch (error) {
+      console.error("Upload failed:", error);
+      setIsUploading(false);
+    }
   };
 
   const hasImages = items.length > 0;
@@ -126,8 +140,6 @@ const UploadFile = ({ onPreviewChange }) => {
               <FiImage className="text-blue-600" />
               {items.length} Images Selected
             </h3>
-
-           
           </div>
 
           {/* Grid */}
@@ -177,15 +189,12 @@ const UploadFile = ({ onPreviewChange }) => {
             </button>
 
             <button
-              onClick={simulateUpload}
+              onClick={uploadFiles}
               disabled={isUploading}
               className="primary_button w-1/2 flex justify-center items-center gap-2"
             >
               {isUploading ? (
-                <>
-                
-                  Uploading… {uploadProgress}%
-                </>
+                <>Uploading… {uploadProgress}%</>
               ) : (
                 <>
                   <FiUpload />

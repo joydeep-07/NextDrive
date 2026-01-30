@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./db");
+const { initGridFS } = require("./config/gridfs");
 
 dotenv.config();
 
@@ -16,10 +17,12 @@ app.use(
 
 app.use(express.json());
 connectDB();
+initGridFS();
 
 // Routes
 app.use("/api/users", require("./routes/user.routes"));
 app.use("/api/folders", require("./routes/folder.route"));
+app.use("/api/files", require("./routes/file.routes"));
 
 app.get("/", (req, res) => {
   res.status(200).json({
