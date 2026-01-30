@@ -1,24 +1,28 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { FILE_ENDPOINTS } from "../api/endpoint";
+import { FaSearch, FaEllipsisV, FaTrash, FaDownload } from "react-icons/fa";
+import DeleteModal from "./DeleteModal"; // Adjust path if needed
 
 const FilesSection = ({ folderId }) => {
   const token = localStorage.getItem("token");
 
   const [files, setFiles] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const [fileToDelete, setFileToDelete] = useState(null);
+
+  const menuRef = useRef(null);
 
   /* =========================
-     Fetch Files (USER ONLY)
+     Fetch Files
   ========================= */
   const fetchFiles = async () => {
     try {
       const res = await axios.get(FILE_ENDPOINTS.GET_MY_FILES, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      // filter by current folder
       const folderFiles = res.data.filter(
         (file) => file.metadata?.folderId === folderId,
       );
@@ -34,63 +38,191 @@ const FilesSection = ({ folderId }) => {
   }, [folderId]);
 
   /* =========================
-     Delete File
+     Close menu when clicking outside
   ========================= */
-  const handleDeleteFile = async (fileId) => {
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setOpenMenuId(null);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  /* =========================
+     Filtered files (search)
+  ========================= */
+  const filteredFiles = files.filter((file) =>
+    file.filename.toLowerCase().includes(searchTerm.toLowerCase()),
+  );
+
+  /* =========================
+     Delete flow
+  ========================= */
+  const requestDelete = (file) => {
+    setFileToDelete(file);
+    setOpenMenuId(null); // close the dropdown menu
+  };
+
+  const cancelDelete = () => {
+    setFileToDelete(null);
+  };
+
+  const confirmDelete = async () => {
+    if (!fileToDelete) return;
+
     try {
-      await axios.delete(FILE_ENDPOINTS.DELETE_FILE(fileId), {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+      await axios.delete(FILE_ENDPOINTS.DELETE_FILE(fileToDelete._id), {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      setFiles((prev) => prev.filter((f) => f._id !== fileId));
+      setFiles((prev) => prev.filter((f) => f._id !== fileToDelete._id));
+      setFileToDelete(null);
     } catch (err) {
       console.error("Delete failed", err);
+      alert("Could not delete file. Please try again.");
+      // You can choose to keep fileToDelete set → user can retry
+      // or reset: setFileToDelete(null);
+    }
+  };
+
+  /* =========================
+     Download File
+  ========================= */
+  const handleDownload = async (file) => {
+    try {
+      const url = `${FILE_ENDPOINTS.GET_FILE(file._id)}?token=${token}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Download failed");
+
+      const blob = await res.blob();
+      const blobUrl = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = file.filename;
+      document.body.appendChild(a);
+      a.click();
+
+      document.body.removeChild(a);
+      URL.revokeObjectURL(blobUrl);
+    } catch (err) {
+      console.error("Download error:", err);
+      alert("Failed to download file");
     }
   };
 
   return (
     <div className="bg-[var(--bg-secondary)]/50 rounded-xl shadow-sm border border-[var(--border-light)]/50 p-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-lg font-semibold text-[var(--text-main)]">Files</h2>
+      <div className="flex justify-between items-center mb-5">
+        <div className="flex items-center gap-4">
+          <div className="outline-none bg-[var(--bg-primary)] flex items-center border border-[var(--border-light)] rounded-full text-sm ">
+            <FaSearch className="ml-3 text-[var(--text-secondary)]/70" />
+            <input
+              type="text"
+              placeholder="Search files..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="px-3 py-1.5 bg-transparent outline-none w-64 sm:w-72"
+            />
+          </div>
+        </div>
         <span className="text-sm text-[var(--text-muted)]">
-          {files.length} items
+          {filteredFiles.length} items
         </span>
       </div>
 
       {/* Empty State */}
-      {files.length === 0 ? (
+      {filteredFiles.length === 0 ? (
         <div className="text-center py-12 border-2 border-dashed border-[var(--border-light)] rounded-lg">
           <h3 className="text-lg font-medium text-[var(--text-main)] mb-2">
-            No files yet
+            {searchTerm ? "No matching files" : "No files yet"}
           </h3>
           <p className="text-[var(--text-muted)]">
-            Upload your first file to get started
+            {searchTerm
+              ? "Try a different search term"
+              : "Upload your first file to get started"}
           </p>
         </div>
       ) : (
         /* Files Grid */
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-          {files.map((file) => (
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+          {filteredFiles.map((file) => (
             <div
               key={file._id}
-              className="relative group aspect-square rounded-lg overflow-hidden border border-[var(--border-light)]"
+              className="relative group rounded-lg overflow-hidden border border-[var(--border-light)] bg-[var(--bg-primary)] flex flex-col"
             >
-              <img
-                src={`${FILE_ENDPOINTS.GET_FILE(file._id)}?token=${token}`}
-                alt={file.filename}
-                className="w-full h-full object-cover"
-              />
+              {/* Preview */}
+              <div className="aspect-square relative">
+                <img
+                  src={`${FILE_ENDPOINTS.GET_FILE(file._id)}?token=${token}`}
+                  alt={file.filename}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.target.src = "/fallback-image.png"; // make sure this exists
+                  }}
+                />
+              </div>
 
-              <button
-                onClick={() => handleDeleteFile(file._id)}
-                className="absolute top-2 right-2 p-1.5 bg-red-600 text-white rounded-full opacity-0 group-hover:opacity-100 transition"
-              >
-                ✕
-              </button>
+              {/* Filename + Menu */}
+              <div className="flex justify-between items-center px-3 py-2.5">
+                <div className="text-xs text-[var(--text-main)] font-medium truncate max-w-[75%]">
+                  {file.filename}
+                </div>
+
+                <div className="relative">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setOpenMenuId(openMenuId === file._id ? null : file._id);
+                    }}
+                    className="text-[var(--text-secondary)] hover:text-[var(--text-main)] transition"
+                  >
+                    <FaEllipsisV size={14} />
+                  </button>
+
+                  {openMenuId === file._id && (
+                    <div
+                      ref={menuRef}
+                      className="absolute bottom-full right-0 mb-2 bg-[var(--bg-secondary)] border border-[var(--border-light)] rounded-lg shadow-xl py-1.5 min-w-[140px] z-20"
+                    >
+                      <button
+                        onClick={() => {
+                          handleDownload(file);
+                          setOpenMenuId(null);
+                        }}
+                        className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-primary)]/60"
+                      >
+                        <FaDownload size={14} />
+                        Download
+                      </button>
+
+                      <button
+                        onClick={() => requestDelete(file)}
+                        className="flex items-center gap-2 w-full px-4 py-2 text-left text-red-600 text-sm hover:bg-red-50/50"
+                      >
+                        <FaTrash size={14} />
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {fileToDelete && (
+        <div
+          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+          onClick={cancelDelete} // click outside → close
+        >
+          <div onClick={(e) => e.stopPropagation()}>
+            <DeleteModal onCancel={cancelDelete} onConfirm={confirmDelete} />
+          </div>
         </div>
       )}
     </div>
