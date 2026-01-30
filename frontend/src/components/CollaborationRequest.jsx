@@ -1,17 +1,21 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { USER_ENDPOINTS } from "../api/endpoint";
+import { USER_ENDPOINTS, FOLDER_ENDPOINTS } from "../api/endpoint";
 import { FaSearch } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 
-const CollaborationRequest = () => {
+const CollaborationRequest = ({ folderId }) => {
   const [open, setOpen] = useState(false);
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [sendingTo, setSendingTo] = useState(null); // userId
 
   const token = localStorage.getItem("token");
 
+  /* =========================
+     Fetch users
+  ========================= */
   useEffect(() => {
     if (!open) return;
 
@@ -31,6 +35,35 @@ const CollaborationRequest = () => {
 
     fetchUsers();
   }, [open, token]);
+
+  /* =========================
+     Send invite
+  ========================= */
+  const sendInvite = async (userId) => {
+    try {
+      setSendingTo(userId);
+
+      await axios.post(
+        FOLDER_ENDPOINTS.SEND_INVITE,
+        {
+          folderId,
+          userId,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      // optional: disable button after invite
+      setUsers((prev) =>
+        prev.map((u) => (u._id === userId ? { ...u, invited: true } : u)),
+      );
+    } catch (error) {
+      console.error("Failed to send invite:", error);
+    } finally {
+      setSendingTo(null);
+    }
+  };
 
   const filteredUsers = users.filter(
     (user) =>
@@ -92,7 +125,7 @@ const CollaborationRequest = () => {
                 {/* Header */}
                 <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--border-light)]">
                   <div>
-                    <h3 className="text-xl font-medium text-[var(--text-main)] font-heading flex justify-start items-center gap-2">
+                    <h3 className="text-xl font-medium font-heading flex gap-2">
                       Invite
                       <span className="text-[var(--accent-primary)]">
                         Collaborators
@@ -124,48 +157,50 @@ const CollaborationRequest = () => {
                 {/* User List */}
                 <div className="flex-1 px-6 pb-6 overflow-y-auto min-h-[200px]">
                   {loading ? (
-                    <div className="flex items-center justify-center h-40 text-[var(--text-muted)]">
+                    <div className="flex items-center justify-center h-40">
                       <div className="w-6 h-6 border-2 border-[var(--accent-primary)] border-t-transparent rounded-full animate-spin mr-3" />
                       Fetching users...
-                    </div>
-                  ) : filteredUsers.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-40 text-[var(--text-muted)] gap-2">
-                      <p className="text-lg">No users found</p>
-                      <p className="text-sm">Try adjusting your search</p>
                     </div>
                   ) : (
                     <div className="space-y-3">
                       {filteredUsers.map((user) => (
                         <div
                           key={user._id}
-                          className="group flex items-center justify-between p-4 rounded-lg
-                                     border border-[var(--border-light)] bg-[var(--bg-tertiary)/40]
-                                     hover:bg-[var(--bg-secondary)]/30
-                                     hover:scale-[1.01] transition-all duration-200"
+                          className="flex items-center justify-between p-4 rounded-lg
+                                     border border-[var(--border-light)] bg-[var(--bg-tertiary)/40]"
                         >
-                          <div className="flex items-center gap-3 min-w-0">
+                          <div className="flex items-center gap-3">
                             <div
                               className="w-10 h-10 rounded-full bg-[var(--accent-primary)]/10
-                                            flex items-center justify-center text-[var(--accent-primary)]"
+                                            flex items-center justify-center"
                             >
                               {user.firstName?.[0]?.toUpperCase() || "?"}
                             </div>
-                            <div className="min-w-0">
-                              <p className="font-medium truncate">
+                            <div>
+                              <p className="font-medium">
                                 {user.firstName} {user.lastName}
                               </p>
-                              <p className="text-sm text-[var(--text-muted)] truncate">
+                              <p className="text-sm text-[var(--text-muted)]">
                                 {user.email}
                               </p>
                             </div>
                           </div>
 
                           <button
-                            className="px-5 py-2 text-sm font-medium rounded-sm
-                                             bg-[var(--blue-button)] text-white
-                                             hover:brightness-110 active:scale-95 transition-all"
+                            onClick={() => sendInvite(user._id)}
+                            disabled={user.invited || sendingTo === user._id}
+                            className={`px-5 py-2 text-sm font-medium rounded-sm text-white
+                              ${
+                                user.invited
+                                  ? "bg-green-500 cursor-not-allowed"
+                                  : "bg-[var(--blue-button)] hover:brightness-110"
+                              }`}
                           >
-                            Invite
+                            {user.invited
+                              ? "Invited"
+                              : sendingTo === user._id
+                                ? "Sending..."
+                                : "Invite"}
                           </button>
                         </div>
                       ))}

@@ -1,5 +1,4 @@
 const Folder = require("../models/Folder.model");
-const User = require("../models/User.model");
 
 /**
  * Create Folder
@@ -11,7 +10,7 @@ exports.createFolder = async (req, res) => {
     const folder = await Folder.create({
       name,
       description,
-      owner: req.user.id, // from auth middleware
+      owner: req.user.id,
     });
 
     res.status(201).json(folder);
@@ -26,17 +25,14 @@ exports.createFolder = async (req, res) => {
 exports.sendCollaborationRequest = async (req, res) => {
   try {
     const { folderId, userId } = req.body;
+    const senderId = req.user.id;
 
     const folder = await Folder.findById(folderId);
 
-    if (!folder) {
-      return res.status(404).json({ message: "Folder not found" });
-    }
+    if (!folder) return res.status(404).json({ message: "Folder not found" });
 
-    // Only owner can send request
-    if (folder.owner.toString() !== req.user.id) {
-      return res.status(403).json({ message: "Not authorized" });
-    }
+    if (!folder.owner.equals(senderId))
+      return res.status(403).json({ message: "Only owner can invite" });
 
     if (
       folder.collaborators.includes(userId) ||
@@ -48,9 +44,9 @@ exports.sendCollaborationRequest = async (req, res) => {
     folder.collaborationRequests.push(userId);
     await folder.save();
 
-    res.json({ message: "Collaboration request sent" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json({ message: "Invitation sent" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
@@ -60,37 +56,48 @@ exports.sendCollaborationRequest = async (req, res) => {
 exports.acceptCollaborationRequest = async (req, res) => {
   try {
     const { folderId } = req.body;
+    const userId = req.user.id;
 
     const folder = await Folder.findById(folderId);
 
-    if (!folder) {
-      return res.status(404).json({ message: "Folder not found" });
-    }
-
-    const userId = req.user.id;
+    if (!folder) return res.status(404).json({ message: "Folder not found" });
 
     if (!folder.collaborationRequests.includes(userId)) {
-      return res.status(400).json({ message: "No request found" });
+      return res.status(400).json({ message: "No invitation found" });
     }
 
-    // Remove from requests
-    folder.collaborationRequests = folder.collaborationRequests.filter(
-      (id) => id.toString() !== userId,
-    );
-
-    // Add to collaborators
+    folder.collaborationRequests.pull(userId);
     folder.collaborators.push(userId);
 
     await folder.save();
 
-    res.json({ message: "Collaboration request accepted" });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+    res.json({ message: "Invitation accepted" });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };
 
 /**
- * Get Folder (Owner or Collaborator)
+ * 🔔 Get My Invitations
+ */
+exports.getMyInvitations = async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const folders = await Folder.find({
+      collaborationRequests: userId,
+    })
+      .populate("owner", "firstName lastName email")
+      .select("name owner createdAt");
+
+    res.json({ invitations: folders });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+/**
+ * Get Folder By ID (Owner or Collaborator)
  */
 exports.getFolderById = async (req, res) => {
   try {
@@ -106,8 +113,7 @@ exports.getFolderById = async (req, res) => {
 
     const hasAccess =
       folder.owner._id.toString() === userId ||
-      folder.collaborators.some((collab) => collab._id.toString() === userId);
-
+      folder.collaborators.some((c) => c._id.toString() === userId);
 
     if (!hasAccess) {
       return res.status(403).json({ message: "Access denied" });
@@ -120,8 +126,7 @@ exports.getFolderById = async (req, res) => {
 };
 
 /**
- * Get All Folders for Logged-in User
- * (Owner OR Collaborator)
+ * Get My Folders
  */
 exports.getMyFolders = async (req, res) => {
   try {
@@ -137,9 +142,8 @@ exports.getMyFolders = async (req, res) => {
   }
 };
 
-
 /**
- * Delete Folder (Owner only)
+ * Delete Folder
  */
 exports.deleteFolder = async (req, res) => {
   try {
@@ -149,7 +153,6 @@ exports.deleteFolder = async (req, res) => {
       return res.status(404).json({ message: "Folder not found" });
     }
 
-    // 🔒 Only owner can delete
     if (folder.owner.toString() !== req.user.id) {
       return res.status(403).json({ message: "Not authorized" });
     }

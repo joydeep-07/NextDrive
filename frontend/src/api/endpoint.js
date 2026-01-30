@@ -21,15 +21,14 @@ export const USER_ENDPOINTS = {
 ========================= */
 export const FOLDER_ENDPOINTS = {
   CREATE: `${BASE_URL}/folders`,
-  GET_FOLDERS: `${BASE_URL}/folders`, // get my folders
-  GET_BY_ID: (folderId) => `${BASE_URL}/folders/${folderId}`,
+  GET_FOLDERS: `${BASE_URL}/folders`,
+  GET_BY_ID: (id) => `${BASE_URL}/folders/${id}`,
 
-  // 🤝 Collaboration
   SEND_INVITE: `${BASE_URL}/folders/invite`,
   ACCEPT_INVITE: `${BASE_URL}/folders/accept`,
+  GET_INVITATIONS: `${BASE_URL}/folders/invitations`,
 
-  // 🗑 Delete folder (OWNER ONLY)
-  DELETE_FOLDER: (folderId) => `${BASE_URL}/folders/${folderId}`,
+  DELETE_FOLDER: (id) => `${BASE_URL}/folders/${id}`,
 };
 
 /* =========================

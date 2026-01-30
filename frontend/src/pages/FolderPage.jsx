@@ -103,7 +103,9 @@ const FolderPage = () => {
                 onPreviewChange={setHasSelectedImages}
               />
 
-              {!hasSelectedImages && <CollaborationRequest />}
+              {!hasSelectedImages && (
+                <CollaborationRequest folderId={folder._id} />
+              )}
             </div>
           </div>
         </div>
