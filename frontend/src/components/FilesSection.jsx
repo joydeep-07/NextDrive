@@ -114,7 +114,7 @@ const FilesSection = ({ folderId }) => {
   };
 
   return (
-    <div className="bg-[var(--bg-secondary)]/50 rounded-xl shadow-sm border border-[var(--border-light)]/50 p-6">
+    <div className="bg-[var(--bg-secondary)]/20 rounded-xl border border-[var(--border-light)]/50 p-6">
       <div className="flex justify-between items-center mb-5">
         <div className="flex items-center gap-4">
           <div className="outline-none bg-[var(--bg-primary)] flex items-center border border-[var(--border-light)] rounded-full text-sm ">
@@ -217,7 +217,7 @@ const FilesSection = ({ folderId }) => {
       {/* Delete Confirmation Modal */}
       {fileToDelete && (
         <div
-          className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
           onClick={cancelDelete} // click outside → close
         >
           <div onClick={(e) => e.stopPropagation()}>

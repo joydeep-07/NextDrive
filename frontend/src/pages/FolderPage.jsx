@@ -84,7 +84,7 @@ const FolderPage = () => {
         </div>
 
         {/* Action Panel */}
-        <div className="bg-[var(--bg-secondary)]/50 rounded-xl shadow-sm border border-[var(--border-light)]/50 p-6">
+        <div className="bg-[var(--bg-secondary)]/20 rounded-xl border border-[var(--border-light)]/50 p-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
             {!hasSelectedImages && (
               <div>
