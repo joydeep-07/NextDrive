@@ -44,16 +44,16 @@ const AcceptRequest = () => {
         {open && (
           <>
             <motion.div
-              className="fixed inset-0 bg-black/40 z-40"
+              className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
               onClick={() => setOpen(false)}
             />
 
             <motion.div
               className="fixed top-1/2 left-1/2 z-50 bg-[var(--bg-main)]
-                w-96 rounded-xl p-5 border"
+                w-4xl h-[70vh] rounded-xl p-5 border border-[var(--border-light)]/40 "
               style={{ transform: "translate(-50%, -50%)" }}
             >
-              <h2 className="mb-4 font-semibold">Invitations</h2>
+              <h2 className="mb-4 font-heading text-xl font-semibold">Collaboration <span className="text-[var(--accent-primary)] ">Requests</span> </h2>
 
               {invites.length === 0 ? (
                 <p className="text-sm text-[var(--text-muted)]">
@@ -68,7 +68,7 @@ const AcceptRequest = () => {
                     <div>
                       <p className="font-medium">{folder.name}</p>
                       <p className="text-xs text-[var(--text-muted)]">
-                        by {folder.owner.firstName}
+                        by {folder.owner.firstName} ({folder.owner.email})
                       </p>
                     </div>
 
