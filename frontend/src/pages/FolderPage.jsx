@@ -7,6 +7,7 @@ import { FOLDER_ENDPOINTS } from "../api/endpoint";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
 import AllCollaborators from "../components/AllCollaborators";
+import GroupChat from "../ui/GroupChat";
 
 const FolderPage = () => {
   const { folderId } = useParams();
@@ -87,49 +88,55 @@ const FolderPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--bg-main)] py-8 px-4 transition-all">
-      <div className="max-w-7xl mx-auto space-y-8">
-        {/* Header */}
-        <div className="space-y-2">
-          <h1 className="text-3xl font-bold text-[var(--text-main)] font-heading">
-            {folder.name}
-          </h1>
+    <>
+      <div className="min-h-screen bg-[var(--bg-main)] py-8 px-4 transition-all">
+        <div className="max-w-7xl mx-auto space-y-8">
+          {/* Header */}
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold text-[var(--text-main)] font-heading">
+              {folder.name}
+            </h1>
 
-          {folder.description ? (
-            <p className="text-[var(--text-muted)]">{folder.description}</p>
-          ) : (
-            <p className="text-[var(--text-muted)] italic">
-              No description provided
-            </p>
-          )}
-        </div>
-
-        {/* Action Panel */}
-        <div className="bg-[var(--bg-secondary)]/20 rounded-xl border border-[var(--border-light)]/50 p-6">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
-            {!hasSelectedImages && (
-              <div>
-                <AllCollaborators folderId={folderId} />
-              </div>
+            {folder.description ? (
+              <p className="text-[var(--text-muted)]">{folder.description}</p>
+            ) : (
+              <p className="text-[var(--text-muted)] italic">
+                No description provided
+              </p>
             )}
+          </div>
 
-            <div className="flex items-center justify-center gap-4">
-              <UploadFile
-                folderId={folderId}
-                onPreviewChange={setHasSelectedImages}
-              />
-
-              {!hasSelectedImages && isOwner && (
-                <CollaborationRequest folderId={folder._id} />
+          {/* Action Panel */}
+          <div className="bg-[var(--bg-secondary)]/20 rounded-xl border border-[var(--border-light)]/50 p-6">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+              {!hasSelectedImages && (
+                <div>
+                  <AllCollaborators folderId={folderId} />
+                </div>
               )}
+
+              <div className="flex items-center justify-center gap-4">
+                <UploadFile
+                  folderId={folderId}
+                  onPreviewChange={setHasSelectedImages}
+                />
+
+                {!hasSelectedImages && isOwner && (
+                  <CollaborationRequest folderId={folder._id} />
+                )}
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Files Section (EXTRACTED) */}
-        <FilesSection folderId={folderId} />
+          {/* Files Section (EXTRACTED) */}
+          <FilesSection folderId={folderId} />
+        </div>
       </div>
-    </div>
+
+      <div className="fixed bottom-10 right-10">
+        <GroupChat/>
+      </div>
+    </>
   );
 };
 

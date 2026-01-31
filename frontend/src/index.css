@@ -74,6 +74,9 @@
   --scroll-thumb : rgb(27, 27, 27);
 }
 
+::-webkit-scrollbar{
+  display: none;
+}
 
 @font-face {
   font-family: "Marcellus";
