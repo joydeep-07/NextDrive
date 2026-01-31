@@ -6,6 +6,7 @@ import FilesSection from "../components/FilesSection";
 import { FOLDER_ENDPOINTS } from "../api/endpoint";
 import { useDispatch, useSelector } from "react-redux";
 import { jwtDecode } from "jwt-decode";
+import AllCollaborators from "../components/AllCollaborators";
 
 const FolderPage = () => {
   const { folderId } = useParams();
@@ -132,6 +133,7 @@ const FolderPage = () => {
 
         {/* Files Section (EXTRACTED) */}
         <FilesSection folderId={folderId} />
+        <AllCollaborators folderId={folderId} />
       </div>
     </div>
   );

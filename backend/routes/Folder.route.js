@@ -11,6 +11,7 @@ const {
   getFolderById,
   getMyFolders,
   deleteFolder,
+  getFolderParticipants,
 } = require("../controllers/Folder.controller");
 
 router.post("/", auth, createFolder);
@@ -24,5 +25,7 @@ router.get("/invitations", auth, getMyInvitations);
 
 router.get("/:id", auth, getFolderById);
 router.delete("/:id", auth, deleteFolder);
+// Get all participants
+router.get("/:id/participants", auth, getFolderParticipants);
 
 module.exports = router;

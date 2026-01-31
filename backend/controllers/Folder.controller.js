@@ -164,3 +164,39 @@ exports.deleteFolder = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+/**
+ * Get Folder Participants (Owner + Collaborators)
+ */
+exports.getFolderParticipants = async (req, res) => {
+  try {
+    const folder = await Folder.findById(req.params.id)
+      .populate("owner", "firstName lastName email")
+      .populate("collaborators", "firstName lastName email");
+
+    if (!folder) {
+      return res.status(404).json({ message: "Folder not found" });
+    }
+
+    const userId = req.user.id;
+
+    const hasAccess =
+      folder.owner._id.toString() === userId ||
+      folder.collaborators.some(
+        (c) => c._id.toString() === userId
+      );
+
+    if (!hasAccess) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    res.json({
+      owner: folder.owner,
+      collaborators: folder.collaborators,
+      totalParticipants: 1 + folder.collaborators.length,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
