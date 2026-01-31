@@ -23,6 +23,7 @@ initGridFS();
 app.use("/api/users", require("./routes/user.routes"));
 app.use("/api/folders", require("./routes/folder.route"));
 app.use("/api/files", require("./routes/file.routes"));
+app.use("/api/chat", require("./routes/chat.routes"));
 
 app.get("/", (req, res) => {
   res.status(200).json({

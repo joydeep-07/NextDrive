@@ -35,3 +35,9 @@ export const FILE_ENDPOINTS = {
 
   DELETE_FILE: (fileId) => `${BASE_URL}/files/${fileId}`,
 };
+
+export const CHAT_ENDPOINTS = {
+  GET_MESSAGES: (folderId) => `${BASE_URL}/chat/${folderId}`,
+  SEND_MESSAGE: (folderId) => `${BASE_URL}/chat/${folderId}`,
+};
+
