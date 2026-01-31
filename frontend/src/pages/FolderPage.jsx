@@ -111,7 +111,11 @@ const FolderPage = () => {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
               {!hasSelectedImages && (
                 <div>
-                  <AllCollaborators folderId={folderId} />
+                  <h1 className="text-md font-medium">All Files</h1>
+                  <p className="text-sm text-[var(--text-muted)] mt-1 max-w-sm">
+                    Manage your files here. Upload, share, and collaborate with
+                    your team seamlessly.
+                  </p>
                 </div>
               )}
 
@@ -134,7 +138,7 @@ const FolderPage = () => {
       </div>
 
       <div className="fixed bottom-10 right-10">
-        <GroupChat/>
+        <GroupChat />
       </div>
     </>
   );

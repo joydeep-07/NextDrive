@@ -126,7 +126,7 @@ const UploadFile = ({ onPreviewChange, folderId = null }) => {
 
           <div className="flex justify-center">
             <button type="button" className="primary_button">
-              Select Images
+             Upload Images
             </button>
           </div>
         </div>

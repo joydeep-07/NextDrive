@@ -87,7 +87,7 @@ const AllCollaborators = ({ folderId }) => {
             <img
               src={user.avatar || DEFAULT_AVATAR}
               alt="user"
-              className="size-12 rounded-full group-hover:-translate-x-2 transition-all duration-300 z-10"
+              className="size-9 rounded-full group-hover:-translate-x-3 transition-all duration-300 z-10"
             />
           </div>
         ))}
