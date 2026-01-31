@@ -2,7 +2,7 @@ const User = require("../models/User.model");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
-/* REGISTER */
+//  REGISTER 
 exports.registerUser = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
@@ -41,7 +41,6 @@ exports.loginUser = async (req, res) => {
       return res.status(400).json({ message: "Invalid email or password" });
     }
 
-    // ✅ FIXED TOKEN
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
@@ -62,9 +61,12 @@ exports.loginUser = async (req, res) => {
 };
 
 // GET ALL USERS
+
 exports.getAllUsers = async (req, res) => {
   try {
-    const users = await User.find().select("-password");
+    const users = await User.find({
+      _id: { $ne: req.user.id }, 
+    }).select("-password");
 
     res.status(200).json({
       success: true,
@@ -75,3 +77,4 @@ exports.getAllUsers = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
