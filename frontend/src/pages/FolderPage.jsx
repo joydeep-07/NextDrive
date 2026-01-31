@@ -109,12 +109,7 @@ const FolderPage = () => {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
             {!hasSelectedImages && (
               <div>
-                <h2 className="text-lg font-semibold text-[var(--text-main)]">
-                  Folder Actions
-                </h2>
-                <p className="text-sm mt-1 text-[var(--text-muted)]">
-                  Upload files or invite collaborators
-                </p>
+                <AllCollaborators folderId={folderId} />
               </div>
             )}
 
@@ -133,7 +128,6 @@ const FolderPage = () => {
 
         {/* Files Section (EXTRACTED) */}
         <FilesSection folderId={folderId} />
-        <AllCollaborators folderId={folderId} />
       </div>
     </div>
   );
