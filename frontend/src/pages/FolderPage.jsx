@@ -4,15 +4,35 @@ import UploadFile from "../components/UploadFile";
 import CollaborationRequest from "../components/CollaborationRequest";
 import FilesSection from "../components/FilesSection";
 import { FOLDER_ENDPOINTS } from "../api/endpoint";
+import { useDispatch, useSelector } from "react-redux";
+import { jwtDecode } from "jwt-decode";
 
 const FolderPage = () => {
   const { folderId } = useParams();
-  const token = localStorage.getItem("token");
 
   const [folder, setFolder] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [hasSelectedImages, setHasSelectedImages] = useState(false);
+  const { isAuthenticated } = useSelector((state) => state.auth);
+
+  const token = localStorage.getItem("token");
+
+  let loggedInUserId = null;
+  if (token) {
+    try {
+      const decoded = jwtDecode(token);
+      loggedInUserId = decoded.id || decoded._id;
+    } catch (err) {
+      console.error("Invalid token");
+    }
+  }
+
+  const ownerId =
+    typeof folder?.owner === "string" ? folder.owner : folder?.owner?._id;
+
+  const isOwner = ownerId === loggedInUserId;
+
 
   /* =========================
      Fetch Folder
@@ -103,7 +123,7 @@ const FolderPage = () => {
                 onPreviewChange={setHasSelectedImages}
               />
 
-              {!hasSelectedImages && (
+              {!hasSelectedImages && isOwner && (
                 <CollaborationRequest folderId={folder._id} />
               )}
             </div>
