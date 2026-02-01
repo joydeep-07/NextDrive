@@ -3,6 +3,7 @@ import axios from "axios";
 import { FILE_ENDPOINTS } from "../api/endpoint";
 import { FaSearch, FaEllipsisV, FaTrash, FaDownload, FaPen } from "react-icons/fa";
 import DeleteModal from "./DeleteModal"; // Adjust path if needed
+import { toast } from "sonner";
 
 const FilesSection = ({ folderId }) => {
   const token = localStorage.getItem("token");
@@ -85,7 +86,7 @@ const FilesSection = ({ folderId }) => {
       setFileToDelete(null);
     } catch (err) {
       console.error("Delete failed", err);
-      alert("Could not delete file. Please try again.");
+      toast.error("Could not delete file. Please try again.");
       // You can choose to keep fileToDelete set → user can retry
       // or reset: setFileToDelete(null);
     }
