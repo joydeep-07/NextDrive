@@ -1,10 +1,10 @@
-# 🌟 MyDrive - A MERN Stack SaaS for File Management
+# NextDrive - A MERN Stack SaaS for File Management
 
 **MyDrive** is a cloud-based SaaS platform inspired by Google Drive, built with the **MERN stack** and **Socket.IO** for real-time updates. It allows users to manage folders, upload files, collaborate with others, and chat in real-time.
 
 ---
 
-## 🚀 Features
+## Features
 
 ### **User Authentication**
 - Users can **create an account** and **log in** with a unique username and password.  
@@ -30,7 +30,7 @@
 
 ---
 
-## 💻 Tech Stack
+## Tech Stack
 
 - **Frontend:** React.js, Tailwind CSS  
 - **Backend:** Node.js, Express.js  
@@ -39,9 +39,10 @@
 - **File Storage:** GridFS (MongoDB)
 
 ---
+## Required .env
 
-PORT= Your Port
-MONGO_URI= Your mongo db URI
-JWT_SECRET= Your secret key
+- PORT= Your Port
+- MONGO_URI= Your mongo db URI
+- JWT_SECRET= Your secret key
 
 
