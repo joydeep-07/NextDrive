@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { FILE_ENDPOINTS } from "../api/endpoint";
-import { FaSearch, FaEllipsisV, FaTrash, FaDownload } from "react-icons/fa";
+import { FaSearch, FaEllipsisV, FaTrash, FaDownload, FaPen } from "react-icons/fa";
 import DeleteModal from "./DeleteModal"; // Adjust path if needed
 
 const FilesSection = ({ folderId }) => {
@@ -11,6 +11,10 @@ const FilesSection = ({ folderId }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openMenuId, setOpenMenuId] = useState(null);
   const [fileToDelete, setFileToDelete] = useState(null);
+
+  const [renamingFileId, setRenamingFileId] = useState(null);
+  const [newFileName, setNewFileName] = useState("");
+
 
   const menuRef = useRef(null);
 
@@ -86,6 +90,47 @@ const FilesSection = ({ folderId }) => {
       // or reset: setFileToDelete(null);
     }
   };
+
+  // RENAME 
+
+
+  const startRename = (file) => {
+    setRenamingFileId(file._id);
+    setNewFileName(file.filename);
+    setOpenMenuId(null);
+  };
+
+  const cancelRename = () => {
+    setRenamingFileId(null);
+    setNewFileName("");
+  };
+
+  const confirmRename = async (file) => {
+    if (!newFileName.trim() || newFileName === file.filename) {
+      cancelRename();
+      return;
+    }
+
+    try {
+      await axios.patch(
+        FILE_ENDPOINTS.RENAME_FILE(file._id),
+        { newName: newFileName },
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+
+      setFiles((prev) =>
+        prev.map((f) =>
+          f._id === file._id ? { ...f, filename: newFileName } : f,
+        ),
+      );
+
+      cancelRename();
+    } catch (err) {
+      console.error("Rename failed", err);
+      alert("Failed to rename file");
+    }
+  };
+
 
   /* =========================
      Download File
@@ -167,8 +212,28 @@ const FilesSection = ({ folderId }) => {
 
               {/* Filename + Menu */}
               <div className="flex justify-between items-center px-3 py-2.5">
-                <div className="text-xs text-[var(--text-main)] font-medium truncate max-w-[75%]">
-                  {file.filename}
+                <div className="max-w-[75%]">
+                  {renamingFileId === file._id ? (
+                    <input
+                      autoFocus
+                      value={newFileName}
+                      onChange={(e) => setNewFileName(e.target.value)}
+                      onBlur={() => confirmRename(file)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") confirmRename(file);
+                        if (e.key === "Escape") cancelRename();
+                      }}
+                      className="w-full text-xs px-2 py-1 rounded-xs bg-[var(--bg-secondary)] border border-[var(--border-light)] outline-none"
+                    />
+                  ) : (
+                    <div
+                      className="text-xs text-[var(--text-main)] font-medium truncate cursor-text"
+                      onDoubleClick={() => startRename(file)}
+                      title="Double click to rename"
+                    >
+                      {file.filename}
+                    </div>
+                  )}
                 </div>
 
                 <div className="relative">
@@ -196,6 +261,13 @@ const FilesSection = ({ folderId }) => {
                       >
                         <FaDownload size={14} />
                         Download
+                      </button>
+
+                      <button
+                        onClick={() => startRename(file)}
+                        className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-primary)]/60"
+                      >
+                        <FaPen/> Rename
                       </button>
 
                       <button

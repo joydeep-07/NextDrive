@@ -10,6 +10,7 @@ const {
   getFile,
   getMyFiles,
   deleteFile,
+  renameFile, // ✅ added
 } = require("../controllers/file.controller");
 
 /* =========================
@@ -21,6 +22,12 @@ router.post("/upload", auth, upload.array("files", 10), uploadFiles);
    📂 Get logged-in user's files
 ========================= */
 router.get("/", auth, getMyFiles);
+
+/* =========================
+   ✏️ Rename file
+   (Owner + Collaborators)
+========================= */
+router.patch("/rename/:id", auth, renameFile);
 
 /* =========================
    👁 View / Stream file

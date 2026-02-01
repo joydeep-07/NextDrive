@@ -159,3 +159,60 @@ exports.deleteFile = async (req, res) => {
     res.status(500).json({ message: "Delete failed" });
   }
 };
+
+
+/* =========================
+   Rename File
+   (Owner + Collaborators)
+========================= */
+exports.renameFile = async (req, res) => {
+  try {
+    const { newName } = req.body;
+    if (!newName) {
+      return res.status(400).json({ message: "New filename is required" });
+    }
+
+    const fileId = new mongoose.Types.ObjectId(req.params.id);
+    const gfs = getGFS();
+
+    const files = await gfs.find({ _id: fileId }).toArray();
+    if (!files.length) {
+      return res.status(404).json({ message: "File not found" });
+    }
+
+    const file = files[0];
+
+    // owner check
+    let hasAccess =
+      file.metadata?.owner?.toString() === req.user.id;
+
+    // collaborator check
+    if (!hasAccess && file.metadata?.folderId) {
+      hasAccess = await hasFolderAccess(
+        file.metadata.folderId,
+        req.user.id
+      );
+    }
+
+    if (!hasAccess) {
+      return res.status(403).json({ message: "Not allowed to rename" });
+    }
+
+    // Update filename in GridFS files collection
+    await mongoose.connection.db
+      .collection("uploads.files") // ⚠️ must match your bucket name
+      .updateOne(
+        { _id: fileId },
+        { $set: { filename: newName } }
+      );
+
+    res.json({
+      success: true,
+      message: "File renamed successfully",
+      filename: newName,
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Rename failed" });
+  }
+};

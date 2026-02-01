@@ -33,8 +33,11 @@ export const FILE_ENDPOINTS = {
 
   GET_FILE: (fileId) => `${BASE_URL}/files/${fileId}`,
 
+  RENAME_FILE: (id) => `${BASE_URL}/files/rename/${id}`, // ✅ FIXED
+
   DELETE_FILE: (fileId) => `${BASE_URL}/files/${fileId}`,
 };
+
 
 export const CHAT_ENDPOINTS = {
   GET_MESSAGES: (folderId) => `${BASE_URL}/chat/${folderId}`,
