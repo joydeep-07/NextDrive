@@ -4,7 +4,7 @@ import './index.css'
 import App from './App.jsx'
 import { Provider } from 'react-redux'
 import { store } from './redux/store.js'
-// import './scrollbar.css'
+import './scrollbar.css'
 import { BrowserRouter } from 'react-router-dom'
 import LenisProvider from './components/LenisProvider.jsx'
 
