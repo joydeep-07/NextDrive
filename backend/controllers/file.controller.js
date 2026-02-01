@@ -1,6 +1,28 @@
 const { getGFS } = require("../config/gridfs");
 const mongoose = require("mongoose");
+const Folder = require("../models/Folder.model");
 
+/* =========================
+   Helper: Check folder access
+========================= */
+const hasFolderAccess = async (folderId, userId) => {
+  if (!folderId) return false;
+
+  const folder = await Folder.findById(folderId);
+  if (!folder) return false;
+
+  // owner
+  if (folder.owner.toString() === userId) return true;
+
+  // collaborator
+  return folder.collaborators.some(
+    (collabId) => collabId.toString() === userId,
+  );
+};
+
+/* =========================
+   Upload Files (OWNER ONLY)
+========================= */
 exports.uploadFiles = async (req, res) => {
   try {
     if (!req.files || !req.files.length) {
@@ -39,7 +61,10 @@ exports.uploadFiles = async (req, res) => {
   }
 };
 
-
+/* =========================
+   Get / Stream File
+   (Owner + Collaborators)
+========================= */
 exports.getFile = async (req, res) => {
   try {
     const fileId = new mongoose.Types.ObjectId(req.params.id);
@@ -52,8 +77,15 @@ exports.getFile = async (req, res) => {
 
     const file = files[0];
 
-    // permission check
-    if (file.metadata?.owner.toString() !== req.user.id) {
+    const isOwner = file.metadata?.owner?.toString() === req.user.id;
+
+    let hasAccess = isOwner;
+
+    if (!isOwner && file.metadata?.folderId) {
+      hasAccess = await hasFolderAccess(file.metadata.folderId, req.user.id);
+    }
+
+    if (!hasAccess) {
       return res.status(403).json({ message: "Access denied" });
     }
 
@@ -67,19 +99,41 @@ exports.getFile = async (req, res) => {
   }
 };
 
+/* =========================
+   Get My Files
+   (Owner + Collaborator)
+========================= */
 exports.getMyFiles = async (req, res) => {
   try {
     const gfs = getGFS();
+    const userId = req.user.id;
 
-    const files = await gfs.find({ "metadata.owner": req.user.id }).toArray();
+    // folders where user is owner or collaborator
+    const folders = await Folder.find({
+      $or: [{ owner: userId }, { collaborators: userId }],
+    }).select("_id");
+
+    const folderIds = folders.map((f) => f._id.toString());
+
+    const files = await gfs
+      .find({
+        $or: [
+          { "metadata.owner": userId },
+          { "metadata.folderId": { $in: folderIds } },
+        ],
+      })
+      .toArray();
 
     res.json(files);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Failed to load files" });
   }
 };
 
-
+/* =========================
+   Delete File (OWNER ONLY)
+========================= */
 exports.deleteFile = async (req, res) => {
   try {
     const fileId = new mongoose.Types.ObjectId(req.params.id);
@@ -93,7 +147,7 @@ exports.deleteFile = async (req, res) => {
     const file = files[0];
 
     // owner check
-    if (file.metadata?.owner.toString() !== req.user.id) {
+    if (file.metadata?.owner?.toString() !== req.user.id) {
       return res.status(403).json({ message: "Not allowed" });
     }
 
@@ -101,6 +155,7 @@ exports.deleteFile = async (req, res) => {
 
     res.json({ success: true, message: "File deleted" });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Delete failed" });
   }
 };
