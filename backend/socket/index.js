@@ -12,9 +12,7 @@ const initSocket = (server) => {
     },
   });
 
-  /* =========================
-     Socket Auth Middleware
-  ========================= */
+  /* ========================= Socket Auth Middleware ========================= */
   io.use((socket, next) => {
     try {
       const token = socket.handshake.auth?.token;
@@ -28,9 +26,7 @@ const initSocket = (server) => {
     }
   });
 
-  /* =========================
-     Socket Events
-  ========================= */
+  /* ========================= Socket Events ========================= */
   io.on("connection", (socket) => {
     console.log("🟢 Socket connected:", socket.user.id);
 

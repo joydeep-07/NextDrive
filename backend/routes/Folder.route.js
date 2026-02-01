@@ -19,13 +19,10 @@ router.get("/", auth, getMyFolders);
 
 router.post("/invite", auth, sendCollaborationRequest);
 router.post("/accept", auth, acceptCollaborationRequest);
-
-// 🔔 NEW
 router.get("/invitations", auth, getMyInvitations);
 
 router.get("/:id", auth, getFolderById);
 router.delete("/:id", auth, deleteFolder);
-// Get all participants
 router.get("/:id/participants", auth, getFolderParticipants);
 
 module.exports = router;

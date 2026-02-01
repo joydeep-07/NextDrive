@@ -1,8 +1,6 @@
 const Folder = require("../models/Folder.model");
 
-/**
- * Create Folder
- */
+// Create Folder
 exports.createFolder = async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -19,9 +17,8 @@ exports.createFolder = async (req, res) => {
   }
 };
 
-/**
- * Send Collaboration Request
- */
+// Invite Collaborator
+
 exports.sendCollaborationRequest = async (req, res) => {
   try {
     const { folderId, userId } = req.body;
@@ -50,9 +47,7 @@ exports.sendCollaborationRequest = async (req, res) => {
   }
 };
 
-/**
- * Accept Collaboration Request
- */
+// Accept Collaboration Request
 exports.acceptCollaborationRequest = async (req, res) => {
   try {
     const { folderId } = req.body;
@@ -77,9 +72,7 @@ exports.acceptCollaborationRequest = async (req, res) => {
   }
 };
 
-/**
- * 🔔 Get My Invitations
- */
+// Get my notifications
 exports.getMyInvitations = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -96,9 +89,7 @@ exports.getMyInvitations = async (req, res) => {
   }
 };
 
-/**
- * Get Folder By ID (Owner or Collaborator)
- */
+// Get folder by id
 exports.getFolderById = async (req, res) => {
   try {
     const folder = await Folder.findById(req.params.id)
@@ -125,9 +116,7 @@ exports.getFolderById = async (req, res) => {
   }
 };
 
-/**
- * Get My Folders
- */
+//  get my folders (owner + collaborator)
 exports.getMyFolders = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -142,9 +131,7 @@ exports.getMyFolders = async (req, res) => {
   }
 };
 
-/**
- * Delete Folder
- */
+// Delete Folder
 exports.deleteFolder = async (req, res) => {
   try {
     const folder = await Folder.findById(req.params.id);
@@ -166,9 +153,7 @@ exports.deleteFolder = async (req, res) => {
 };
 
 
-/**
- * Get Folder Participants (Owner + Collaborators)
- */
+// Get Folder Participants (owner + collaborators)
 exports.getFolderParticipants = async (req, res) => {
   try {
     const folder = await Folder.findById(req.params.id)

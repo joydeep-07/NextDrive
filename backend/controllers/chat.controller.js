@@ -1,8 +1,7 @@
 const Chat = require("../models/Chat.model");
 
-/**
- * Get folder messages
- */
+//  Get folder messages
+ 
 exports.getMessages = async (req, res) => {
   try {
     const messages = await Chat.find({ folder: req.params.folderId })
@@ -15,9 +14,8 @@ exports.getMessages = async (req, res) => {
   }
 };
 
-/**
- * Send message
- */
+// Send message
+
 exports.sendMessage = async (req, res) => {
   try {
     const chat = await Chat.create({

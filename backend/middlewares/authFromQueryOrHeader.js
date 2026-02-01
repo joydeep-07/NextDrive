@@ -4,7 +4,7 @@ const authFromQueryOrHeader = (req, res, next) => {
   try {
     let token = null;
 
-    // 1️⃣ Header
+    // Header
     if (
       req.headers.authorization &&
       req.headers.authorization.startsWith("Bearer ")
@@ -12,7 +12,7 @@ const authFromQueryOrHeader = (req, res, next) => {
       token = req.headers.authorization.split(" ")[1];
     }
 
-    // 2️⃣ Query param (for <img>)
+    // Query param (for <img>)
     if (!token && req.query.token) {
       token = req.query.token;
     }

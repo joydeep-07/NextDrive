@@ -3,7 +3,7 @@ const Folder = require("../models/Folder.model");
 const folderChatAccess = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const role = req.user.role; // "admin"
+    const role = req.user.role; 
     const folderId = req.params.folderId || req.body.folderId;
 
     if (!folderId) {

@@ -2,9 +2,8 @@ const { getGFS } = require("../config/gridfs");
 const mongoose = require("mongoose");
 const Folder = require("../models/Folder.model");
 
-/* =========================
-   Helper: Check folder access
-========================= */
+// Check if user has access to folder (owner or collaborator)
+
 const hasFolderAccess = async (folderId, userId) => {
   if (!folderId) return false;
 
@@ -20,9 +19,7 @@ const hasFolderAccess = async (folderId, userId) => {
   );
 };
 
-/* =========================
-   Upload Files (OWNER ONLY)
-========================= */
+// Upload Files
 exports.uploadFiles = async (req, res) => {
   try {
     if (!req.files || !req.files.length) {
@@ -61,10 +58,7 @@ exports.uploadFiles = async (req, res) => {
   }
 };
 
-/* =========================
-   Get / Stream File
-   (Owner + Collaborators)
-========================= */
+// Get File by ID (with access check)
 exports.getFile = async (req, res) => {
   try {
     const fileId = new mongoose.Types.ObjectId(req.params.id);
@@ -99,10 +93,7 @@ exports.getFile = async (req, res) => {
   }
 };
 
-/* =========================
-   Get My Files
-   (Owner + Collaborator)
-========================= */
+// Get My Files (Owner + Collaborator)
 exports.getMyFiles = async (req, res) => {
   try {
     const gfs = getGFS();
@@ -131,9 +122,7 @@ exports.getMyFiles = async (req, res) => {
   }
 };
 
-/* =========================
-   Delete File (OWNER ONLY)
-========================= */
+// Delete File (OWNER ONLY)
 exports.deleteFile = async (req, res) => {
   try {
     const fileId = new mongoose.Types.ObjectId(req.params.id);
@@ -161,10 +150,7 @@ exports.deleteFile = async (req, res) => {
 };
 
 
-/* =========================
-   Rename File
-   (Owner + Collaborators)
-========================= */
+// Rename File (OWNER + COLLABORATOR)
 exports.renameFile = async (req, res) => {
   try {
     const { newName } = req.body;
@@ -200,7 +186,7 @@ exports.renameFile = async (req, res) => {
 
     // Update filename in GridFS files collection
     await mongoose.connection.db
-      .collection("uploads.files") // ⚠️ must match your bucket name
+      .collection("uploads.files") 
       .updateOne(
         { _id: fileId },
         { $set: { filename: newName } }
