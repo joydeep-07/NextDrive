@@ -1,6 +1,6 @@
 # NextDrive - A MERN Stack SaaS for File Management
 
-**MyDrive** is a cloud-based SaaS platform inspired by Google Drive, built with the **MERN stack** and **Socket.IO** for real-time updates. It allows users to manage folders, upload files, collaborate with others, and chat in real-time.
+**NextDrive** is a cloud-based SaaS platform inspired by Google Drive, built with the **MERN stack** and **Socket.IO** for real-time updates. It allows users to manage folders, upload files, collaborate with others, and chat in real-time.
 
 ---
 
