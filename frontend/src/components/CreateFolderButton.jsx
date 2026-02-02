@@ -41,17 +41,13 @@ const CreateFolderButton = ({ onCreated }) => {
   return (
     <>
       {/* Create Button */}
-      <motion.button
+      <button
         onClick={() => setOpen(true)}
         className="px-4 py-2 z-10 rounded-sm bg-[var(--bg-secondary)] text-white font-medium shadow-md hover:shadow-lg transition-shadow"
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+       
       >
         Create New Folder
-      </motion.button>
+      </button>
 
       {/* Modal Backdrop */}
       <AnimatePresence>
