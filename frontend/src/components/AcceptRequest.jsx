@@ -63,7 +63,7 @@ const AcceptRequest = () => {
                 invites.map((folder) => (
                   <div
                     key={folder._id}
-                    className="flex justify-between items-center mb-3"
+                    className="flex justify-between items-center border px-4 py-2 border-[var(--border-light)] rounded-sm mb-3"
                   >
                     <div>
                       <p className="font-medium">{folder.name}</p>
