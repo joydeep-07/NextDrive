@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { createFolder } from "../api/folder.api";
+import { socket } from "../utils/socket"; // ✅ your socket instance
 
 const CreateFolderButton = ({ onCreated }) => {
   const [open, setOpen] = useState(false);
@@ -8,22 +9,49 @@ const CreateFolderButton = ({ onCreated }) => {
   const [description, setDescription] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // 🔒 Prevent duplicate folder insert (REST + socket)
+  const createdFolderIdRef = useRef(null);
+
+  /* =========================
+     Realtime Listener
+  ========================= */
+  useEffect(() => {
+    const handleRealtimeCreate = (folder) => {
+      // Ignore duplicate (already added via REST)
+      if (createdFolderIdRef.current === folder._id) return;
+
+      onCreated?.(folder);
+    };
+
+    socket.on("folder-created", handleRealtimeCreate);
+
+    return () => {
+      socket.off("folder-created", handleRealtimeCreate);
+    };
+  }, [onCreated]);
+
+  /* =========================
+     Create Folder
+  ========================= */
   const handleCreate = async () => {
-    if (!name.trim()) {
-      alert("Folder name required");
-      return;
-    }
+    if (!name.trim()) return;
 
     try {
       setLoading(true);
+
       const res = await createFolder({ name, description });
+
+      // Mark this folder as already handled
+      createdFolderIdRef.current = res.data._id;
+
+      // Immediate UI update (optimistic)
       onCreated?.(res.data);
 
-     
       setTimeout(() => {
         setName("");
         setDescription("");
         setOpen(false);
+        createdFolderIdRef.current = null;
       }, 300);
     } catch (err) {
       alert(err.response?.data?.message || "Failed to create folder");
@@ -33,6 +61,7 @@ const CreateFolderButton = ({ onCreated }) => {
   };
 
   const handleCancel = () => {
+    if (loading) return;
     setName("");
     setDescription("");
     setOpen(false);
@@ -44,12 +73,11 @@ const CreateFolderButton = ({ onCreated }) => {
       <button
         onClick={() => setOpen(true)}
         className="px-4 py-2 z-10 rounded-sm bg-[var(--bg-secondary)] text-white font-medium shadow-md hover:shadow-lg transition-shadow"
-       
       >
         Create New Folder
       </button>
 
-      {/* Modal Backdrop */}
+      {/* Modal */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -57,9 +85,8 @@ const CreateFolderButton = ({ onCreated }) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={() => !loading && handleCancel()}
+            onClick={handleCancel}
           >
-            {/* Modal Content */}
             <motion.div
               className="bg-[var(--bg-main)] p-6 rounded-xl w-full max-w-xl shadow-2xl"
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -68,46 +95,32 @@ const CreateFolderButton = ({ onCreated }) => {
               transition={{ type: "spring", damping: 25, stiffness: 300 }}
               onClick={(e) => e.stopPropagation()}
             >
-              <h2
-                className="text-xl font-semibold mb-4 text-[var(--text-primary)]"
-                
-              >
+              <h2 className="text-xl font-semibold mb-4 text-[var(--text-primary)]">
                 Create a New Folder
               </h2>
 
-              <div
-               
-              >
-                <input
-                  type="text"
-                  placeholder="Folder name *"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full mb-3 p-3 border border-[var(--border-light)] rounded-lg outline-none transition-all"
-                  disabled={loading}
-                />
-              </div>
+              <input
+                type="text"
+                placeholder="Folder name *"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                disabled={loading}
+                className="w-full mb-3 p-3 border border-[var(--border-light)] rounded-lg outline-none"
+              />
 
-              <div
-               
-              >
-                <textarea
-                  placeholder="Description (optional)"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full mb-4 p-3 border border-[var(--border-light)] rounded-lg outline-none min-h-[100px] resize-none transition-all"
-                  disabled={loading}
-                />
-              </div>
+              <textarea
+                placeholder="Description (optional)"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                disabled={loading}
+                className="w-full mb-4 p-3 border border-[var(--border-light)] rounded-lg min-h-[100px] resize-none outline-none"
+              />
 
-              <div
-                className="flex justify-end gap-3"
-               
-              >
+              <div className="flex justify-end gap-3">
                 <button
                   onClick={handleCancel}
-                  className="px-4 py-2 border border-[var(--border-light)] font-medium rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-hover)] transition-colors"
-                 
+                  disabled={loading}
+                  className="px-4 py-2 border border-[var(--border-light)] rounded-lg text-[var(--text-secondary)] hover:bg-[var(--bg-hover)]"
                 >
                   Cancel
                 </button>
@@ -115,12 +128,10 @@ const CreateFolderButton = ({ onCreated }) => {
                 <button
                   onClick={handleCreate}
                   disabled={loading || !name.trim()}
-                  className="px-5 py-2 bg-[var(--accent-primary)] text-white rounded-lg font-medium disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
-                  
+                  className="px-5 py-2 bg-[var(--accent-primary)] text-white rounded-lg font-medium disabled:opacity-50"
                 >
                   {loading ? (
                     <motion.span
-                      initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       className="flex items-center gap-2"
                     >
@@ -136,12 +147,7 @@ const CreateFolderButton = ({ onCreated }) => {
                       Creating...
                     </motion.span>
                   ) : (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                    >
-                      Create Folder
-                    </motion.span>
+                    "Create Folder"
                   )}
                 </button>
               </div>
