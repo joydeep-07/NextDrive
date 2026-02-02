@@ -7,7 +7,6 @@ import axios from "axios";
 import socket from "../utils/socket";
 import { CHAT_ENDPOINTS } from "../api/endpoint";
 
-
 const popupVariants = {
   hidden: {
     opacity: 0,
@@ -43,6 +42,7 @@ const GroupChat = () => {
   const messagesEndRef = useRef(null);
   const chatContainerRef = useRef(null);
   const wrapperRef = useRef(null);
+
   const { folderId } = useParams();
   const token = localStorage.getItem("token");
 
@@ -51,18 +51,12 @@ const GroupChat = () => {
     currentUserId = JSON.parse(atob(token.split(".")[1])).id;
   } catch {}
 
-  // Auto-scroll to bottom
+  // Scroll only when needed
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
-  useEffect(() => {
-    if (showPopup) {
-      scrollToBottom();
-    }
-  }, [messages, showPopup]);
-
-  // Fetch previous messages when popup opens
+  // Fetch messages when opening popup
   useEffect(() => {
     if (!showPopup) return;
 
@@ -72,12 +66,12 @@ const GroupChat = () => {
       })
       .then((res) => {
         setMessages(Array.isArray(res.data) ? res.data : []);
-        setUnreadCount(0);
+        setTimeout(scrollToBottom, 100);
       })
       .catch(() => setShowPopup(false));
   }, [showPopup, folderId, token]);
 
-  // Socket setup
+  // Socket logic
   useEffect(() => {
     socket.auth = { token };
     socket.connect();
@@ -88,8 +82,10 @@ const GroupChat = () => {
 
       if (!showPopup && msg.sender._id !== currentUserId) {
         setUnreadCount((c) => c + 1);
-      } else {
-        setTimeout(scrollToBottom, 50);
+      }
+
+      if (showPopup) {
+        setTimeout(scrollToBottom, 60);
       }
     });
 
@@ -108,10 +104,10 @@ const GroupChat = () => {
     });
 
     setText("");
-    setTimeout(scrollToBottom, 100);
+    setTimeout(scrollToBottom, 80);
   };
 
-  // Close on click outside
+  // Close popup on outside click
   useEffect(() => {
     const handler = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
@@ -131,19 +127,21 @@ const GroupChat = () => {
           src="https://i.pinimg.com/1200x/6c/2d/b4/6c2db475513ab92f1b96666ec420e84c.jpg"
           alt="Group"
           onClick={() => {
-            setShowPopup((prev) => !prev);
-            if (!showPopup) setUnreadCount(0);
+            setShowPopup((prev) => {
+              if (!prev) setUnreadCount(0); // reset ONLY when opening
+              return !prev;
+            });
           }}
         />
 
         {unreadCount > 0 && (
-          <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm animate-pulse">
+          <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded-full shadow-sm">
             {unreadCount}
           </span>
         )}
       </div>
 
-      {/* Animated Chat Popup */}
+      {/* Chat Popup */}
       <AnimatePresence>
         {showPopup && (
           <motion.div
@@ -173,7 +171,7 @@ const GroupChat = () => {
                 <AllCollaborators folderId={folderId} />
               </div>
 
-              {/* Messages Area */}
+              {/* Messages */}
               <div
                 ref={chatContainerRef}
                 className="flex-1 overflow-y-auto px-4 py-5 space-y-4 bg-gradient-to-b from-[var(--bg-secondary)] to-[var(--bg-main)]/30 scrollbar-hide"
@@ -187,8 +185,10 @@ const GroupChat = () => {
                     const isOwn = m.sender._id === currentUserId;
                     return (
                       <div
-                        key={m._id || m.tempId || `${m.message}-${m.createdAt}`}
-                        className={`flex ${isOwn ? "justify-end" : "justify-start"} animate-fade-in`}
+                        key={m._id || `${m.message}-${m.createdAt}`}
+                        className={`flex ${
+                          isOwn ? "justify-end" : "justify-start"
+                        }`}
                       >
                         <div
                           className={`max-w-[80%] px-4 py-2.5 rounded-2xl shadow-sm ${
@@ -200,16 +200,9 @@ const GroupChat = () => {
                           {!isOwn && (
                             <span className="block text-xs font-medium opacity-80 mb-1">
                               {m.sender.firstName}
-                              {m.sender.role === "admin" && (
-                                <span className="text-[var(--accent-soft)] ml-1">
-                                  admin
-                                </span>
-                              )}
                             </span>
                           )}
-                          <p className="text-sm leading-relaxed break-words">
-                            {m.message}
-                          </p>
+                          <p className="text-sm break-words">{m.message}</p>
                           <span className="block text-xs opacity-60 mt-1 text-right">
                             {new Date(m.createdAt).toLocaleTimeString([], {
                               hour: "2-digit",
@@ -224,7 +217,7 @@ const GroupChat = () => {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* Input Area */}
+              {/* Input */}
               <div className="p-3 border-t border-[var(--border-light)] bg-[var(--bg-secondary)]">
                 <div className="flex items-center gap-2 bg-[var(--bg-main)] rounded-full px-4 py-2 shadow-inner">
                   <input
@@ -242,9 +235,9 @@ const GroupChat = () => {
                   <button
                     onClick={sendMessage}
                     disabled={!text.trim()}
-                    className={`p-2 rounded-full transition-colors ${
+                    className={`p-2 rounded-full ${
                       text.trim()
-                        ? "text-[var(--accent-primary)] hover:bg-[var(--accent-soft)]/20"
+                        ? "text-[var(--accent-primary)]"
                         : "text-[var(--text-muted)] cursor-not-allowed"
                     }`}
                   >
