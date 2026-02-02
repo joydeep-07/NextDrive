@@ -1,8 +1,15 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { FILE_ENDPOINTS } from "../api/endpoint";
-import { FaSearch, FaEllipsisV, FaTrash, FaDownload, FaPen } from "react-icons/fa";
-import DeleteModal from "./DeleteModal"; // Adjust path if needed
+import {
+  FaSearch,
+  FaEllipsisV,
+  FaTrash,
+  FaDownload,
+  FaPen,
+  FaSyncAlt,
+} from "react-icons/fa";
+import DeleteModal from "./DeleteModal";
 import { toast } from "sonner";
 
 const FilesSection = ({ folderId }) => {
@@ -12,17 +19,19 @@ const FilesSection = ({ folderId }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [openMenuId, setOpenMenuId] = useState(null);
   const [fileToDelete, setFileToDelete] = useState(null);
-
   const [renamingFileId, setRenamingFileId] = useState(null);
   const [newFileName, setNewFileName] = useState("");
-
+  const [isLoading, setIsLoading] = useState(false); // ← new: nice UX
 
   const menuRef = useRef(null);
 
-  /* =========================
-     Fetch Files
-  ========================= */
+  // ────────────────────────────────────────────────
+  // Fetch logic (reusable)
+  // ────────────────────────────────────────────────
   const fetchFiles = async () => {
+    if (!folderId) return;
+
+    setIsLoading(true);
     try {
       const res = await axios.get(FILE_ENDPOINTS.GET_MY_FILES, {
         headers: { Authorization: `Bearer ${token}` },
@@ -35,16 +44,19 @@ const FilesSection = ({ folderId }) => {
       setFiles(folderFiles);
     } catch (err) {
       console.error("Failed to fetch files", err);
+      toast.error("Failed to load files");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    if (folderId) fetchFiles();
+    fetchFiles();
   }, [folderId]);
 
-  /* =========================
-     Close menu when clicking outside
-  ========================= */
+  // ────────────────────────────────────────────────
+  // Close menu when clicking outside
+  // ────────────────────────────────────────────────
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (menuRef.current && !menuRef.current.contains(e.target)) {
@@ -55,45 +67,34 @@ const FilesSection = ({ folderId }) => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  /* =========================
-     Filtered files (search)
-  ========================= */
   const filteredFiles = files.filter((file) =>
     file.filename.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  /* =========================
-     Delete flow
-  ========================= */
+  // ────────────────────────────────────────────────
+  // Handlers (delete, rename, download...)
+  // ────────────────────────────────────────────────
   const requestDelete = (file) => {
     setFileToDelete(file);
-    setOpenMenuId(null); // close the dropdown menu
+    setOpenMenuId(null);
   };
 
-  const cancelDelete = () => {
-    setFileToDelete(null);
-  };
+  const cancelDelete = () => setFileToDelete(null);
 
   const confirmDelete = async () => {
     if (!fileToDelete) return;
-
     try {
       await axios.delete(FILE_ENDPOINTS.DELETE_FILE(fileToDelete._id), {
         headers: { Authorization: `Bearer ${token}` },
       });
-
       setFiles((prev) => prev.filter((f) => f._id !== fileToDelete._id));
       setFileToDelete(null);
+      toast.success("File deleted");
     } catch (err) {
       console.error("Delete failed", err);
-      toast.error("Could not delete file. Please try again.");
-      // You can choose to keep fileToDelete set → user can retry
-      // or reset: setFileToDelete(null);
+      toast.error("Could not delete file");
     }
   };
-
-  // RENAME 
-
 
   const startRename = (file) => {
     setRenamingFileId(file._id);
@@ -124,18 +125,14 @@ const FilesSection = ({ folderId }) => {
           f._id === file._id ? { ...f, filename: newFileName } : f,
         ),
       );
-
       cancelRename();
+      toast.success("Renamed successfully");
     } catch (err) {
       console.error("Rename failed", err);
-      alert("Failed to rename file");
+      toast.error("Failed to rename file");
     }
   };
 
-
-  /* =========================
-     Download File
-  ========================= */
   const handleDownload = async (file) => {
     try {
       const url = `${FILE_ENDPOINTS.GET_FILE(file._id)}?token=${token}`;
@@ -144,26 +141,23 @@ const FilesSection = ({ folderId }) => {
 
       const blob = await res.blob();
       const blobUrl = URL.createObjectURL(blob);
-
       const a = document.createElement("a");
       a.href = blobUrl;
       a.download = file.filename;
-      document.body.appendChild(a);
       a.click();
-
       document.body.removeChild(a);
       URL.revokeObjectURL(blobUrl);
     } catch (err) {
       console.error("Download error:", err);
-      alert("Failed to download file");
+      toast.error("Failed to download file");
     }
   };
 
   return (
     <div className="bg-[var(--bg-secondary)]/20 rounded-xl border border-[var(--border-light)]/50 p-6">
-      <div className="flex justify-between items-center mb-5">
+      <div className="flex justify-between items-center mb-5 flex-wrap gap-4">
         <div className="flex items-center gap-4">
-          <div className="outline-none bg-[var(--bg-primary)] flex items-center border border-[var(--border-light)] rounded-full text-sm ">
+          <div className="outline-none bg-[var(--bg-primary)] flex items-center border border-[var(--border-light)] rounded-full text-sm">
             <FaSearch className="ml-3 text-[var(--text-secondary)]/70" />
             <input
               type="text"
@@ -174,13 +168,36 @@ const FilesSection = ({ folderId }) => {
             />
           </div>
         </div>
-        <span className="text-sm text-[var(--text-muted)]">
-          {filteredFiles.length} items
-        </span>
+
+        <div className="flex items-center gap-4">
+          {/* Refresh Button */}
+          <button
+            onClick={fetchFiles}
+            disabled={isLoading}
+            title="Refresh file list"
+            className={`
+              flex items-center gap-2 px-3 py-1.5 text-sm rounded-sm border border-[var(--border-light)]
+              hover:bg-[var(--bg-secondary)] transition-colors
+              disabled:opacity-50 disabled:cursor-not-allowed
+              ${isLoading ? "animate-spin" : ""}
+            `}
+          >
+            <FaSyncAlt size={10} className={isLoading ? "animate-spin" : ""} />
+            <span className="hidden sm:inline">Refresh</span>
+          </button>
+
+          <span className="text-sm text-[var(--text-muted)]">
+            {isLoading ? "Loading..." : `${filteredFiles.length} items`}
+          </span>
+        </div>
       </div>
 
-      {/* Empty State */}
-      {filteredFiles.length === 0 ? (
+      {/* Empty State / Loading */}
+      {isLoading ? (
+        <div className="text-center py-12 text-[var(--text-muted)]">
+          Loading files...
+        </div>
+      ) : filteredFiles.length === 0 ? (
         <div className="text-center py-12 border-2 border-dashed border-[var(--border-light)] rounded-lg">
           <h3 className="text-lg font-medium text-[var(--text-main)] mb-2">
             {searchTerm ? "No matching files" : "No files yet"}
@@ -192,26 +209,23 @@ const FilesSection = ({ folderId }) => {
           </p>
         </div>
       ) : (
-        /* Files Grid */
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
           {filteredFiles.map((file) => (
             <div
               key={file._id}
               className="relative group rounded-lg overflow-hidden border border-[var(--border-light)] bg-[var(--bg-primary)] flex flex-col"
             >
-              {/* Preview */}
               <div className="aspect-square relative">
                 <img
                   src={`${FILE_ENDPOINTS.GET_FILE(file._id)}?token=${token}`}
                   alt={file.filename}
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.target.src = "/fallback-image.png"; // make sure this exists
+                    e.target.src = "/fallback-image.png";
                   }}
                 />
               </div>
 
-              {/* Filename + Menu */}
               <div className="flex justify-between items-center px-3 py-2.5">
                 <div className="max-w-[75%]">
                   {renamingFileId === file._id ? (
@@ -268,7 +282,8 @@ const FilesSection = ({ folderId }) => {
                         onClick={() => startRename(file)}
                         className="flex items-center gap-2 w-full px-4 py-2 text-left text-sm hover:bg-[var(--bg-primary)]/60"
                       >
-                        <FaPen/> Rename
+                        <FaPen size={14} />
+                        Rename
                       </button>
 
                       <button
@@ -287,11 +302,10 @@ const FilesSection = ({ folderId }) => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
       {fileToDelete && (
         <div
           className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          onClick={cancelDelete} // click outside → close
+          onClick={cancelDelete}
         >
           <div onClick={(e) => e.stopPropagation()}>
             <DeleteModal onCancel={cancelDelete} onConfirm={confirmDelete} />
