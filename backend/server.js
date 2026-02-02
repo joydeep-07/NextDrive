@@ -5,7 +5,7 @@ const http = require("http");
 
 const connectDB = require("./db");
 const { initGridFS } = require("./config/gridfs");
-const { initSocket } = require("./socket");
+const initSocket = require("./socket");
 
 dotenv.config();
 

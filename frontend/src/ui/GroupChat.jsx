@@ -4,8 +4,7 @@ import { FiMessageCircle, FiSend } from "react-icons/fi";
 import AllCollaborators from "../components/AllCollaborators";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import { socket } from "../utils/socket";
-
+import socket from "../utils/socket";
 import { CHAT_ENDPOINTS } from "../api/endpoint";
 
 

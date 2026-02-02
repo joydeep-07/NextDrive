@@ -1,8 +1,7 @@
 import { io } from "socket.io-client";
 
-export const socket = io("http://localhost:5000", {
+const socket = io("http://localhost:3000", {
   autoConnect: false,
-  auth: {
-    token: localStorage.getItem("token"),
-  },
 });
+
+export default socket;

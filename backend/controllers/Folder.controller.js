@@ -1,9 +1,6 @@
 const Folder = require("../models/Folder.model");
-const { getIO } = require("../socket");
 
-/* =========================
-   Create Folder
-========================= */
+// Create Folder
 exports.createFolder = async (req, res) => {
   try {
     const { name, description } = req.body;
@@ -14,25 +11,21 @@ exports.createFolder = async (req, res) => {
       owner: req.user.id,
     });
 
-    // 🔔 Realtime update
-    const io = getIO();
-    io.to(req.user.id).emit("folder-created", folder);
-
     res.status(201).json(folder);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-/* =========================
-   Invite Collaborator
-========================= */
+// Invite Collaborator
+
 exports.sendCollaborationRequest = async (req, res) => {
   try {
     const { folderId, userId } = req.body;
     const senderId = req.user.id;
 
     const folder = await Folder.findById(folderId);
+
     if (!folder) return res.status(404).json({ message: "Folder not found" });
 
     if (!folder.owner.equals(senderId))
@@ -48,29 +41,20 @@ exports.sendCollaborationRequest = async (req, res) => {
     folder.collaborationRequests.push(userId);
     await folder.save();
 
-    // 🔔 Realtime invite
-    const io = getIO();
-    io.to(userId).emit("collaboration-invite", {
-      folderId: folder._id,
-      folderName: folder.name,
-      from: senderId,
-    });
-
     res.json({ message: "Invitation sent" });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
 };
 
-/* =========================
-   Accept Collaboration
-========================= */
+// Accept Collaboration Request
 exports.acceptCollaborationRequest = async (req, res) => {
   try {
     const { folderId } = req.body;
     const userId = req.user.id;
 
     const folder = await Folder.findById(folderId);
+
     if (!folder) return res.status(404).json({ message: "Folder not found" });
 
     if (!folder.collaborationRequests.includes(userId)) {
@@ -79,14 +63,8 @@ exports.acceptCollaborationRequest = async (req, res) => {
 
     folder.collaborationRequests.pull(userId);
     folder.collaborators.push(userId);
-    await folder.save();
 
-    // 🔔 Realtime update
-    const io = getIO();
-    io.to(folder.owner.toString()).emit("collaboration-accepted", {
-      folderId,
-      userId,
-    });
+    await folder.save();
 
     res.json({ message: "Invitation accepted" });
   } catch (err) {
@@ -94,9 +72,7 @@ exports.acceptCollaborationRequest = async (req, res) => {
   }
 };
 
-/* =========================
-   Get My Invitations
-========================= */
+// Get my notifications
 exports.getMyInvitations = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -113,9 +89,7 @@ exports.getMyInvitations = async (req, res) => {
   }
 };
 
-/* =========================
-   Get Folder By ID
-========================= */
+// Get folder by id
 exports.getFolderById = async (req, res) => {
   try {
     const folder = await Folder.findById(req.params.id)
@@ -127,6 +101,7 @@ exports.getFolderById = async (req, res) => {
     }
 
     const userId = req.user.id;
+
     const hasAccess =
       folder.owner._id.toString() === userId ||
       folder.collaborators.some((c) => c._id.toString() === userId);
@@ -141,9 +116,7 @@ exports.getFolderById = async (req, res) => {
   }
 };
 
-/* =========================
-   Get My Folders
-========================= */
+//  get my folders (owner + collaborator)
 exports.getMyFolders = async (req, res) => {
   try {
     const userId = req.user.id;
@@ -158,21 +131,20 @@ exports.getMyFolders = async (req, res) => {
   }
 };
 
-/* =========================
-   Delete Folder
-========================= */
+// Delete Folder
 exports.deleteFolder = async (req, res) => {
   try {
     const folder = await Folder.findById(req.params.id);
-    if (!folder) return res.status(404).json({ message: "Folder not found" });
 
-    if (folder.owner.toString() !== req.user.id)
+    if (!folder) {
+      return res.status(404).json({ message: "Folder not found" });
+    }
+
+    if (folder.owner.toString() !== req.user.id) {
       return res.status(403).json({ message: "Not authorized" });
+    }
 
     await folder.deleteOne();
-
-    const io = getIO();
-    io.to(req.user.id).emit("folder-deleted", folder._id);
 
     res.json({ message: "Folder deleted successfully" });
   } catch (error) {
@@ -180,23 +152,29 @@ exports.deleteFolder = async (req, res) => {
   }
 };
 
-/* =========================
-   Folder Participants
-========================= */
+
+// Get Folder Participants (owner + collaborators)
 exports.getFolderParticipants = async (req, res) => {
   try {
     const folder = await Folder.findById(req.params.id)
       .populate("owner", "firstName lastName email")
       .populate("collaborators", "firstName lastName email");
 
-    if (!folder) return res.status(404).json({ message: "Folder not found" });
+    if (!folder) {
+      return res.status(404).json({ message: "Folder not found" });
+    }
 
     const userId = req.user.id;
+
     const hasAccess =
       folder.owner._id.toString() === userId ||
-      folder.collaborators.some((c) => c._id.toString() === userId);
+      folder.collaborators.some(
+        (c) => c._id.toString() === userId
+      );
 
-    if (!hasAccess) return res.status(403).json({ message: "Access denied" });
+    if (!hasAccess) {
+      return res.status(403).json({ message: "Access denied" });
+    }
 
     res.json({
       owner: folder.owner,
@@ -208,27 +186,36 @@ exports.getFolderParticipants = async (req, res) => {
   }
 };
 
-/* =========================
-   Leave Folder
-========================= */
+
+// Leave Folder (collaborator only)
 exports.leaveFolder = async (req, res) => {
   try {
-    const folder = await Folder.findById(req.params.id);
+    const folderId = req.params.id;
     const userId = req.user.id;
 
-    if (!folder) return res.status(404).json({ message: "Folder not found" });
+    const folder = await Folder.findById(folderId);
 
-    if (folder.owner.toString() === userId) {
-      return res.status(400).json({ message: "Owner cannot leave the folder" });
+    if (!folder) {
+      return res.status(404).json({ message: "Folder not found" });
     }
 
+    // Owner cannot leave
+    if (folder.owner.toString() === userId) {
+      return res
+        .status(400)
+        .json({ message: "Owner cannot leave the folder" });
+    }
+
+    // Check if user is a collaborator
+    if (!folder.collaborators.includes(userId)) {
+      return res
+        .status(403)
+        .json({ message: "You are not a collaborator of this folder" });
+    }
+
+    // Remove collaborator
     folder.collaborators.pull(userId);
     await folder.save();
-
-    const io = getIO();
-    io.to(folder._id.toString()).emit("collaborator-left", {
-      userId,
-    });
 
     res.json({ message: "You left the folder successfully" });
   } catch (error) {

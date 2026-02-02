@@ -4,8 +4,6 @@ const jwt = require("jsonwebtoken");
 const Folder = require("../models/Folder.model");
 const Chat = require("../models/Chat.model");
 
-let ioInstance;
-
 const initSocket = (server) => {
   const io = new Server(server, {
     cors: {
@@ -13,8 +11,6 @@ const initSocket = (server) => {
       credentials: true,
     },
   });
-
-  ioInstance = io;
 
   /* ========================= Socket Auth Middleware ========================= */
   io.use((socket, next) => {
@@ -33,9 +29,6 @@ const initSocket = (server) => {
   /* ========================= Socket Events ========================= */
   io.on("connection", (socket) => {
     console.log("🟢 Socket connected:", socket.user.id);
-
-    // Join personal room (for notifications)
-    socket.join(socket.user.id);
 
     /* Join folder room */
     socket.on("join-folder", async (folderId) => {
@@ -85,9 +78,4 @@ const initSocket = (server) => {
   return io;
 };
 
-const getIO = () => {
-  if (!ioInstance) throw new Error("Socket.IO not initialized");
-  return ioInstance;
-};
-
-module.exports = { initSocket, getIO };
+module.exports = initSocket;
