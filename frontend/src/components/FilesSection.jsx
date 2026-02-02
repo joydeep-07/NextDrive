@@ -183,7 +183,7 @@ const FilesSection = ({ folderId }) => {
             `}
           >
             <FaSyncAlt size={10} className={isLoading ? "animate-spin" : ""} />
-            <span className="hidden sm:inline">Refresh</span>
+            <span className="hidden uppercase text-xs font-medium text-[var(--text-secondary)] sm:inline">Refresh</span>
           </button>
 
           <span className="text-sm text-[var(--text-muted)]">
