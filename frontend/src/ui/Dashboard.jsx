@@ -166,24 +166,25 @@ const Dashboard = () => {
                 )}
 
                 {/* Menu */}
-                {isOwner && (
-                  <div className="absolute top-3 right-3">
-                    <button
-                      onClick={(e) => toggleMenu(folder._id, e)}
-                      className="p-1.5 rounded-full hover:bg-white/10"
-                    >
-                      <IoEllipsisVertical />
-                    </button>
 
-                    {activeMenu === folder._id && (
-                      <div
-                        className="absolute right-0 mt-1 w-40 rounded-lg shadow-lg py-1 z-10"
-                        style={{
-                          backgroundColor: "var(--bg-secondary)",
-                          border: "1px solid var(--border-color)",
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                      >
+                <div className="absolute top-3 right-3">
+                  <button
+                    onClick={(e) => toggleMenu(folder._id, e)}
+                    className="p-1.5 rounded-full hover:bg-white/10"
+                  >
+                    <IoEllipsisVertical />
+                  </button>
+
+                  {activeMenu === folder._id && (
+                    <div
+                      className="absolute right-0 mt-1 w-40 rounded-lg shadow-lg py-1 z-10"
+                      style={{
+                        backgroundColor: "var(--bg-secondary)",
+                        border: "1px solid var(--border-color)",
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {isOwner && (
                         <button
                           onClick={(e) => openDeleteModal(e, folder._id)}
                           className="w-full text-left px-4 py-2 text-sm hover:bg-white/10 flex items-center gap-2"
@@ -192,15 +193,15 @@ const Dashboard = () => {
                           <FaTrash />
                           Delete
                         </button>
+                      )}
 
-                        <button className="w-full text-left px-4 py-2 text-sm hover:bg-white/10 flex items-center gap-2">
-                          <FaDownload />
-                          Download Zip
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                )}
+                      <button className="w-full text-left px-4 py-2 text-sm hover:bg-white/10 flex items-center gap-2">
+                        <FaDownload />
+                        Download Zip
+                      </button>
+                    </div>
+                  )}
+                </div>
 
                 {/* Folder Icon */}
                 <div className="flex justify-center mt-8 mb-4">
