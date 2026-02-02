@@ -8,6 +8,7 @@ import { FaDownload, FaTrash } from "react-icons/fa";
 import { IoEllipsisVertical } from "react-icons/io5";
 import { MdAdminPanelSettings } from "react-icons/md";
 import Storage from "./Storage";
+import { FiLogOut, FiSettings } from "react-icons/fi";
 
 const Dashboard = () => {
   const [folders, setFolders] = useState([]);
@@ -115,6 +116,39 @@ const Dashboard = () => {
     }
   };
 
+  // Leave folder
+
+  const leaveFolder = async (e, folderId) => {
+    e.stopPropagation();
+    setActiveMenu(null);
+
+    const confirmLeave = window.confirm(
+      "Are you sure you want to leave this folder?",
+    );
+    if (!confirmLeave) return;
+
+    try {
+      const res = await fetch(FOLDER_ENDPOINTS.LEAVE_FOLDER(folderId), {
+        method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Failed to leave folder");
+      }
+
+      // Remove folder from UI
+      setFolders((prev) => prev.filter((f) => f._id !== folderId));
+    } catch (err) {
+      alert(err.message);
+    }
+  };
+
+
   return (
     <div
       className="p-6 min-h-screen"
@@ -170,7 +204,7 @@ const Dashboard = () => {
                 <div className="absolute top-3 right-3">
                   <button
                     onClick={(e) => toggleMenu(folder._id, e)}
-                    className="p-1.5 rounded-full hover:bg-white/10"
+                    className="p-1.5 rounded-full hover:bg-[var(--bg-hover)] "
                   >
                     <IoEllipsisVertical />
                   </button>
@@ -199,6 +233,16 @@ const Dashboard = () => {
                         <FaDownload />
                         Download Zip
                       </button>
+
+                      {!isOwner && (
+                        <button
+                          className="w-full text-left px-4 py-2 text-sm hover:bg-white/10 text-[var(--error)] flex items-center gap-2"
+                          onClick={(e) => leaveFolder(e, folder._id)}
+                        >
+                          <FiLogOut />
+                          Leave Folder
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>

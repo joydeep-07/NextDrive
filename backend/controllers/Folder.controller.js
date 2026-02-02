@@ -185,3 +185,40 @@ exports.getFolderParticipants = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+
+// Leave Folder (collaborator only)
+exports.leaveFolder = async (req, res) => {
+  try {
+    const folderId = req.params.id;
+    const userId = req.user.id;
+
+    const folder = await Folder.findById(folderId);
+
+    if (!folder) {
+      return res.status(404).json({ message: "Folder not found" });
+    }
+
+    // Owner cannot leave
+    if (folder.owner.toString() === userId) {
+      return res
+        .status(400)
+        .json({ message: "Owner cannot leave the folder" });
+    }
+
+    // Check if user is a collaborator
+    if (!folder.collaborators.includes(userId)) {
+      return res
+        .status(403)
+        .json({ message: "You are not a collaborator of this folder" });
+    }
+
+    // Remove collaborator
+    folder.collaborators.pull(userId);
+    await folder.save();
+
+    res.json({ message: "You left the folder successfully" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};

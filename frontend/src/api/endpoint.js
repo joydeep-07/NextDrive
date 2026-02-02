@@ -18,11 +18,8 @@ export const FOLDER_ENDPOINTS = {
   SEND_INVITE: `${BASE_URL}/folders/invite`,
   ACCEPT_INVITE: `${BASE_URL}/folders/accept`,
   GET_INVITATIONS: `${BASE_URL}/folders/invitations`,
-
-  // ✅ NEW — Folder participants (owner + collaborators)
-  GET_PARTICIPANTS: (folderId) =>
-    `${BASE_URL}/folders/${folderId}/participants`,
-
+  GET_PARTICIPANTS: (folderId) =>`${BASE_URL}/folders/${folderId}/participants`,
+  LEAVE_FOLDER: (id) => `${BASE_URL}/folders/${id}/leave`,
   DELETE_FOLDER: (id) => `${BASE_URL}/folders/${id}`,
 };
 

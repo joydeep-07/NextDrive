@@ -12,6 +12,7 @@ const {
   getMyFolders,
   deleteFolder,
   getFolderParticipants,
+  leaveFolder,
 } = require("../controllers/Folder.controller");
 
 router.post("/", auth, createFolder);
@@ -24,5 +25,8 @@ router.get("/invitations", auth, getMyInvitations);
 router.get("/:id", auth, getFolderById);
 router.delete("/:id", auth, deleteFolder);
 router.get("/:id/participants", auth, getFolderParticipants);
+
+router.patch("/:id/leave", auth, leaveFolder);
+
 
 module.exports = router;
