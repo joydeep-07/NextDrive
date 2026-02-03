@@ -23,7 +23,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  // 🔐 Decode logged-in user ID
+  // Decode logged-in user ID
   let loggedInUserId = null;
   if (token) {
     try {
