@@ -8,7 +8,7 @@ const LogoutButton = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    dispatch(logout()); // clear redux auth state
+    dispatch(logout()); 
     localStorage.removeItem("token"); // remove JWT (if stored)
     navigate("/"); // redirect to home
   };
