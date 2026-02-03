@@ -10,7 +10,7 @@ const LogoutButton = () => {
   const handleLogout = () => {
     dispatch(logout()); 
     localStorage.removeItem("token"); 
-    navigate("/"); // redirect to home
+    navigate("/"); 
   };
 
   return (
