@@ -16,7 +16,7 @@ const Dashboard = () => {
   const [error, setError] = useState(null);
   const [activeMenu, setActiveMenu] = useState(null);
 
-  // 🔴 Delete modal state
+  // Delete modal state
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [selectedFolderId, setSelectedFolderId] = useState(null);
 
