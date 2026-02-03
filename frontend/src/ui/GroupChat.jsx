@@ -128,7 +128,7 @@ const GroupChat = () => {
           alt="Group"
           onClick={() => {
             setShowPopup((prev) => {
-              if (!prev) setUnreadCount(0); // reset ONLY when opening
+              if (!prev) setUnreadCount(0); 
               return !prev;
             });
           }}
