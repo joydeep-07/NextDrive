@@ -9,7 +9,7 @@ const LogoutButton = () => {
 
   const handleLogout = () => {
     dispatch(logout()); 
-    localStorage.removeItem("token"); // remove JWT (if stored)
+    localStorage.removeItem("token"); 
     navigate("/"); // redirect to home
   };
 
