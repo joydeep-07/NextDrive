@@ -12,10 +12,7 @@ const CollaborationRequest = ({ folderId }) => {
   const [sendingTo, setSendingTo] = useState(null); 
 
   const token = localStorage.getItem("token");
-
-  /* =========================
-     Fetch users
-  ========================= */
+// FETCH USERS
   useEffect(() => {
     if (!open) return;
 
