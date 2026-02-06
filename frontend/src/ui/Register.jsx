@@ -36,7 +36,7 @@ const Register = ({ onLogin }) => {
     setLoading(true);
     setErrorMessage("");
 
-    // Prepare payload – remove confirmPassword
+    // Prepare payload
     const payload = {
       firstName: data.firstName.trim(),
       lastName: data.lastName.trim(),
