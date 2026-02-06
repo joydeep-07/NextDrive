@@ -48,8 +48,6 @@ const CollaborationRequest = ({ folderId }) => {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
-
-      // optional: disable button after invite
       setUsers((prev) =>
         prev.map((u) => (u._id === userId ? { ...u, invited: true } : u)),
       );
