@@ -9,7 +9,7 @@ const CollaborationRequest = ({ folderId }) => {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
-  const [sendingTo, setSendingTo] = useState(null); // userId
+  const [sendingTo, setSendingTo] = useState(null); 
 
   const token = localStorage.getItem("token");
 
