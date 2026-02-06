@@ -61,9 +61,9 @@ const Register = ({ onLogin }) => {
 
       // Success
       console.log("Registration successful:", result);
-      reset(); // optional: clear form
+      reset();
       alert("Account created! You can now log in.");
-      onLogin?.(); // switch to login view if you want
+      onLogin?.();
     } catch (err) {
       console.error("Registration error:", err);
       setErrorMessage(err.message || "Something went wrong. Please try again.");
