@@ -33,9 +33,7 @@ const CollaborationRequest = ({ folderId }) => {
     fetchUsers();
   }, [open, token]);
 
-  /* =========================
-     Send invite
-  ========================= */
+// Send Invite
   const sendInvite = async (userId) => {
     try {
       setSendingTo(userId);
