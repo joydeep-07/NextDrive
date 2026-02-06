@@ -56,7 +56,6 @@ const Register = ({ onLogin }) => {
       const result = await response.json();
 
       if (!response.ok) {
-        // Backend sent error (e.g. "Email already exists")
         throw new Error(result.message || "Registration failed");
       }
 
