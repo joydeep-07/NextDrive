@@ -40,7 +40,7 @@ const CreateFolderButton = ({ onCreated }) => {
 
   return (
     <>
-      {/* Create Button */}
+      {/* Trigger Button */}
       <button
         onClick={() => setOpen(true)}
         className="px-4 py-2 z-10 rounded-sm bg-[var(--bg-secondary)] text-white font-medium shadow-md hover:shadow-lg transition-shadow"
